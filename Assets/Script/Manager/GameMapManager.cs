@@ -12,9 +12,19 @@ namespace Manager {
         const int MAP_HEIGHT = 7;
         const int MIN_MIXED_NUM = 3;
         IslandType[,] gameMap;
-
+        public GameObject[,] pIslandObj;
         public GameMapManager() {
             gameMap = new IslandType[MAP_WIDTH,MAP_HEIGHT];
+        }
+        /// <summary>
+        /// 根据gameMap更新pIslandObj
+        /// </summary>
+        private void UpdateIslandGameObject() {
+            for(int i = 0; i < MAP_WIDTH; i++) {
+                for(int r = 0; r < MAP_HEIGHT; r++) {
+                    
+                }
+            }
         }
 
         /// <summary>
@@ -27,20 +37,31 @@ namespace Manager {
             if (gameMap[pos.x, pos.y] != IslandType.EMPTY) {
                 return false;
             }
+            List<Vector2Int> list;
+            IslandType finalIslandType;
+            if(MixedIsAllow(island,pos,out list,out finalIslandType)) {
+                foreach (Vector2Int posE in list) {
+                    gameMap[posE.x, posE.y] = IslandType.EMPTY;
+                }
+                island = finalIslandType;
+            }
             gameMap[pos.x, pos.y] = island;
-            //TODO
+            
             return true;
         }
         
+
+
         /// <summary>
         /// 检测在某坐标处是否允许合成岛屿
         /// </summary>
         /// <param name="island">岛屿类型</param>
         /// <param name="pos">坐标</param>
         /// <param name="list">如果允许合成，则返回一个该合成中会使用的岛屿坐标列表，如果不允许，则不保证返回值</param>
+        /// <param name="finalIslandType">如果允许合成，则返回该合成最终会生成的岛屿类型</param>
         /// <returns>是否允许合成岛屿</returns>
 
-        public bool MixedIsAllow(IslandType island,Vector2Int pos,out List<Vector2Int> list) {
+        public bool MixedIsAllow(IslandType island,Vector2Int pos,out List<Vector2Int> list,out IslandType finalIslandType) {
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
             bool[,] gameMapMemory = new bool[MAP_WIDTH, MAP_HEIGHT];
             queue.Enqueue(pos);
@@ -67,12 +88,14 @@ namespace Manager {
             }
             if (list.Count >= MIN_MIXED_NUM - 1) {
                 List<Vector2Int> tmp;
-                if (MixedIsAllow(getNextType(island), pos,out tmp)) {
+                finalIslandType = getNextType(island);
+                if (MixedIsAllow(getNextType(island), pos,out tmp,out finalIslandType)) {
                     list.AddRange(tmp);
                 }
                 return true;
             } else {
                 list = null;
+                finalIslandType = IslandType.EMPTY;
                 return false;
             }
             
