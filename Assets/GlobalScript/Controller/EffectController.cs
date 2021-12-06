@@ -7,7 +7,7 @@ using UnityEngine;
 /// ÌØÐ§¿ØÖÆÆ÷
 /// </summary>
 /// 
-class Effect {
+namespace Effect {
     public interface IEffect {
         
     }

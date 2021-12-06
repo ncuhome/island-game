@@ -8,20 +8,30 @@ namespace Manager {
     /// </summary>
     public class GameMapManager
     {
-        const int MAP_WIDTH = 7;
-        const int MAP_HEIGHT = 7;
-        const int MIN_MIXED_NUM = 3;
+        public int mapWidth { get; private set; }
+        public int mapHeight { get; private set; }
+        /// <summary>
+        /// 最小岛屿合成数量
+        /// </summary>
+        public const int MIN_MIXED_NUM = 3;
         IslandType[,] gameMap;
         public GameObject[,] pIslandObj;
-        public GameMapManager() {
-            gameMap = new IslandType[MAP_WIDTH,MAP_HEIGHT];
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mapWidth"></param>
+        /// <param name="mapHeight"></param>
+        public GameMapManager(int mapWidth,int mapHeight) {
+            this.mapHeight = mapHeight;
+            this.mapWidth = mapWidth;
+            gameMap = new IslandType[mapWidth,mapHeight];
         }
         /// <summary>
         /// 根据gameMap更新pIslandObj
         /// </summary>
         private void UpdateIslandGameObject() {
-            for(int i = 0; i < MAP_WIDTH; i++) {
-                for(int r = 0; r < MAP_HEIGHT; r++) {
+            for(int i = 0; i < mapWidth; i++) {
+                for(int r = 0; r < mapHeight; r++) {
                     
                 }
             }
@@ -33,24 +43,48 @@ namespace Manager {
         /// <param name="island">岛屿类型</param>
         /// <param name="pos">坐标</param>
         /// <returns>是否成功放置岛屿</returns>
-        public bool PlaceIsland(IslandType island,Vector2Int pos) {
+        public bool PlaceIsland(IslandType island, Vector2Int pos) {
             if (gameMap[pos.x, pos.y] != IslandType.EMPTY) {
                 return false;
             }
-            List<Vector2Int> list;
-            IslandType finalIslandType;
-            if(MixedIsAllow(island,pos,out list,out finalIslandType)) {
-                foreach (Vector2Int posE in list) {
-                    gameMap[posE.x, posE.y] = IslandType.EMPTY;
-                }
-                island = finalIslandType;
-            }
             gameMap[pos.x, pos.y] = island;
-            
             return true;
         }
-        
 
+        /// <summary>
+        /// 摧毁岛屿
+        /// </summary>
+        /// <param name="pos">被摧毁岛屿的坐标</param>
+        public void DestroyIsland(Vector2Int pos) {
+            gameMap[pos.x, pos.y] = IslandType.EMPTY;
+        }
+
+        /// <summary>
+        /// 合成岛屿
+        /// </summary>
+        /// <param name="list">被合成的岛屿的坐标链表,合成后的岛屿将会置于最后一个岛屿上</param>
+        /// <returns>是否成功合成</returns>
+        //如果MIN_MIXED_NUM>3，把这个方法改成并查集实现
+        public bool MixedIsland(List<Vector2Int> list) {
+            if (list.Count != 3) return false;
+            for(int i = 0; i < MIN_MIXED_NUM; ++i) {
+                for (int r = 0; r < MIN_MIXED_NUM; ++r) {
+                    Vector2Int pos = list[i] - list[r];
+                    if (!(pos == Vector2Int.up ||
+                        pos == Vector2Int.down ||
+                        pos == Vector2Int.left ||
+                        pos == Vector2Int.right)) {
+                        return false;
+                    }
+                }     
+            }
+            Vector2Int t = list[MIN_MIXED_NUM - 1];
+            gameMap[t.x, t.y] = getNextIslandType(gameMap[t.x,t.y]);
+            for(int i = 0; i < MIN_MIXED_NUM-1; ++i) {
+                gameMap[list[i].x, list[i].y] = IslandType.EMPTY;
+            }
+            return true;
+        }
 
         /// <summary>
         /// 检测在某坐标处是否允许合成岛屿
@@ -63,7 +97,7 @@ namespace Manager {
 
         public bool MixedIsAllow(IslandType island,Vector2Int pos,out List<Vector2Int> list,out IslandType finalIslandType) {
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
-            bool[,] gameMapMemory = new bool[MAP_WIDTH, MAP_HEIGHT];
+            bool[,] gameMapMemory = new bool[mapWidth, mapHeight];
             queue.Enqueue(pos);
             //搜索顺序
             Vector2Int[] posMove = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
@@ -73,9 +107,9 @@ namespace Manager {
                 foreach(Vector2Int move in posMove) {
                     nowPos += move;
                     if (nowPos.x >= 0 &&
-                        nowPos.x < MAP_WIDTH &&
+                        nowPos.x < mapWidth &&
                         nowPos.y >= 0 &&
-                        nowPos.y < MAP_HEIGHT &&
+                        nowPos.y < mapHeight &&
                         gameMapMemory[nowPos.x, nowPos.y] == false) {
                         if (canMixed(gameMap[nowPos.x, nowPos.y], island)) {
                             queue.Enqueue(nowPos);
@@ -88,8 +122,8 @@ namespace Manager {
             }
             if (list.Count >= MIN_MIXED_NUM - 1) {
                 List<Vector2Int> tmp;
-                finalIslandType = getNextType(island);
-                if (MixedIsAllow(getNextType(island), pos,out tmp,out finalIslandType)) {
+                finalIslandType = getNextIslandType(island);
+                if (MixedIsAllow(getNextIslandType(island), pos,out tmp,out finalIslandType)) {
                     list.AddRange(tmp);
                 }
                 return true;
@@ -98,7 +132,6 @@ namespace Manager {
                 finalIslandType = IslandType.EMPTY;
                 return false;
             }
-            
         }
         
         /// <summary>
@@ -121,7 +154,7 @@ namespace Manager {
         /// </summary>
         /// <param name="islandType">当前岛屿等级</param>
         /// <returns>下一个岛屿等级</returns>
-        private IslandType getNextType(IslandType islandType) {
+        private IslandType getNextIslandType(IslandType islandType) {
             if (islandType == IslandType.LARGE_ISLAND) return IslandType.EMPTY;
             return islandType + 1;
         }
