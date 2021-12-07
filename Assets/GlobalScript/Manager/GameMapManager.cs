@@ -8,23 +8,28 @@ namespace Manager {
     /// </summary>
     public class GameMapManager
     {
-        public int mapWidth { get; private set; }
-        public int mapHeight { get; private set; }
+        public int mapWidth { get; private set; } = 3;
+        public int mapHeight { get; private set; } = 3;
+        const int MAX_MAP_LENGHT = 30;
         /// <summary>
         /// 最小岛屿合成数量
         /// </summary>
         public const int MIN_MIXED_NUM = 3;
-        IslandType[,] gameMap;
-        public GameObject[,] pIslandObj;
+        IslandType[,] gameMap = new IslandType[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
+        public IslandScript[,] pIslandObj = new IslandScript[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="mapWidth"></param>
         /// <param name="mapHeight"></param>
         public GameMapManager(int mapWidth,int mapHeight) {
+            if (mapHeight > MAX_MAP_LENGHT || mapWidth > MAX_MAP_LENGHT) {
+                //超限
+                Debug.LogError("out of MAX_MAP_LENGHT");
+            }
             this.mapHeight = mapHeight;
             this.mapWidth = mapWidth;
-            gameMap = new IslandType[mapWidth,mapHeight];
         }
         /// <summary>
         /// 根据gameMap更新pIslandObj
