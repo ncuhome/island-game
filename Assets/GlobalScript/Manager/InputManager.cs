@@ -34,6 +34,13 @@ namespace Manager {
                         singleTouch(Input.touches[0].position);
                 }
             }
+
+            /* !!!WARNING!!! 以下是该死的测试代码，如果在发行中出现了该代码请清理生成与发布选项中的DEBUG宏定义 */
+#if DEBUG
+            if (Input.GetMouseButtonDown(0)) {
+                singleTouch(Input.mousePosition);
+            }
+#endif
         }
     }
 }
