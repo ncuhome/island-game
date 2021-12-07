@@ -11,6 +11,7 @@ namespace Manager {
         public int mapWidth { get; private set; } = 3;
         public int mapHeight { get; private set; } = 3;
         const int MAX_MAP_LENGHT = 30;
+        public Vector2Int interestEmpty;
         /// <summary>
         /// 最小岛屿合成数量
         /// </summary>
@@ -31,13 +32,44 @@ namespace Manager {
             this.mapHeight = mapHeight;
             this.mapWidth = mapWidth;
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public IslandScript touchIsland(Vector2Int pos) {
+            IslandScript ret = null;
+            if (pIslandObj[pos.x, pos.y] != null) {
+                ret = pIslandObj[pos.x, pos.y];
+                interestEmpty.x = -1;
+                interestEmpty.y = -1;
+                //重置空地兴趣点
+                if (ret.isInterestIsland) {
+                    ret.isInterestIsland = false;
+                    ret = null;
+                } else {
+                    ret.isInterestIsland = true;
+                }
+            } else {
+                if (interestEmpty == pos) {
+                    PlaceIsland(IslandType.SMALL_ISLAND, pos);
+                    interestEmpty.x = interestEmpty.y = -1;
+                }
+                else
+                    interestEmpty = pos;
+            }
+            return ret;
+        }
+
         /// <summary>
         /// 根据gameMap更新pIslandObj
         /// </summary>
         private void UpdateIslandGameObject() {
             for(int i = 0; i < mapWidth; i++) {
                 for(int r = 0; r < mapHeight; r++) {
-                    
+                    //这地方到底要放啥  
                 }
             }
         }
@@ -53,6 +85,7 @@ namespace Manager {
                 return false;
             }
             gameMap[pos.x, pos.y] = island;
+            
             return true;
         }
 
@@ -70,11 +103,11 @@ namespace Manager {
         /// <param name="list">被合成的岛屿的坐标链表,合成后的岛屿将会置于最后一个岛屿上</param>
         /// <returns>是否成功合成</returns>
         //如果MIN_MIXED_NUM>3，把这个方法改成并查集实现
-        public bool MixedIsland(List<Vector2Int> list) {
+        public bool MixedIsland(List<IslandScript> list) {
             if (list.Count != 3) return false;
             for(int i = 0; i < MIN_MIXED_NUM; ++i) {
                 for (int r = 0; r < MIN_MIXED_NUM; ++r) {
-                    Vector2Int pos = list[i] - list[r];
+                    Vector2Int pos = list[i].GetIslandPosInMap() - list[r].GetIslandPosInMap();
                     if (!(pos == Vector2Int.up ||
                         pos == Vector2Int.down ||
                         pos == Vector2Int.left ||
@@ -83,10 +116,10 @@ namespace Manager {
                     }
                 }     
             }
-            Vector2Int t = list[MIN_MIXED_NUM - 1];
+            Vector2Int t = list[MIN_MIXED_NUM - 1].GetIslandPosInMap();
             gameMap[t.x, t.y] = getNextIslandType(gameMap[t.x,t.y]);
             for(int i = 0; i < MIN_MIXED_NUM-1; ++i) {
-                gameMap[list[i].x, list[i].y] = IslandType.EMPTY;
+                gameMap[list[i].GetIslandPosInMap().x, list[i].GetIslandPosInMap().y] = IslandType.EMPTY;
             }
             return true;
         }
@@ -145,7 +178,7 @@ namespace Manager {
         /// <param name="a">第一个岛屿</param>
         /// <param name="b">第二个岛屿</param>
         /// <returns>是否可以合成</returns>
-        private bool canMixed(IslandType a,IslandType b) {
+        public static bool canMixed(IslandType a,IslandType b) {
             if(a>b) {
                 IslandType tmp = b;
                 b = a;
@@ -159,7 +192,7 @@ namespace Manager {
         /// </summary>
         /// <param name="islandType">当前岛屿等级</param>
         /// <returns>下一个岛屿等级</returns>
-        private IslandType getNextIslandType(IslandType islandType) {
+        public static IslandType getNextIslandType(IslandType islandType) {
             if (islandType == IslandType.LARGE_ISLAND) return IslandType.EMPTY;
             return islandType + 1;
         }
