@@ -1,0 +1,13 @@
+
+public enum BuildType {
+    EMPTY = 0,
+    BASIC_BUILD = 1,
+    LEVEL1_HOUSE = 1024 + 1,
+    LEVEL1_WORKSHOP = 2048 + 1,
+    LEVEL2_HOUSE = 1024 + 2,
+    LEVEL2_WORKSHOP = 2048 + 2,
+    LEVEL3_HOUSE = 1024 + 3,
+    LEVEL3_WORKSHOP = 2048 + 3,
+    LEVEL4_HOUSE = 1024 + 4,
+    LEVEL4_WORKSHOP = 2048 + 4,
+}
