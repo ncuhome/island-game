@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class SeaController : MonoBehaviour
 {
-    public GameObject map;
+    public GameObject gameMap;
     public GameObject islandObj;
+    public GameObject islandObjInHand;
     MapPosBasement mapPosBasement;
     Manager.GameMapManager gameMapManager;
     /// <summary>
     /// 被高亮的岛屿标记
     /// </summary>
-    List<IslandScript> interestIslandList;
+    List<IslandScript> interestIslandList=new List<IslandScript>();
     /// <summary>
     /// 初始海域长宽
     /// </summary>
@@ -21,27 +22,57 @@ public class SeaController : MonoBehaviour
     /// </summary>
     void InitByStart() {
         gameMapManager = new Manager.GameMapManager(START_LENGTH, START_LENGTH);
-        mapPosBasement = map.GetComponent<MapPosBasement>();
+        mapPosBasement = gameMap.GetComponent<MapPosBasement>();
         mapPosBasement.mapWidth = mapPosBasement.mapHeight = START_LENGTH;
         mapPosBasement.ResetMapPos();
     }
 
     private void Start() {
         Manager.InstanceManager.InputInstance.singleTouch += new Manager.ScreenInputEvent(SeaControlTouchEvent);
+        //检测存档文件，确认是否有存档
+        InitByStart();
+    }
+
+    private void Update() {
+        if (islandObjInHand == null) {
+            islandObjInHand = Instantiate(islandObj);
+            islandObjInHand.transform.parent = mapPosBasement.transform;
+            islandObjInHand.SetActive(false);
+        }
     }
 
     public void SeaControlTouchEvent(Vector2 pos) {
-        IslandScript tmp = gameMapManager.touchIsland(mapPosBasement.ScreenToMapPoint(pos));
+        //防止置空
+        if (islandObjInHand == null) return;
+        IslandScript tmp = gameMapManager.touchIsland(mapPosBasement.ScreenToMapPoint(pos),islandObjInHand);
         if (tmp != null) {
+            if(tmp.gameObject==islandObjInHand) {
+                islandObjInHand = null;
+                gameMapManager.UpdateEffectByController(gameMap.transform);
+                return;
+            }
             interestIslandList.Add(tmp);
+        } else {
+            foreach(IslandScript i in interestIslandList) {
+                i.isInterestIsland = false;
+            }
         }
+        //清除所有非兴趣岛屿
         interestIslandList.RemoveAll(
             delegate(IslandScript island) {
                 return !island.isInterestIsland;
             }
         );
-        if (interestIslandList.Count >= 3) {
+        //print(interestIslandList.Count);
+        if (interestIslandList.Count >= Manager.GameMapManager.MIN_MIXED_NUM) {
             gameMapManager.MixedIsland(interestIslandList);
+            //全部清除
+            interestIslandList.RemoveAll(
+                delegate(IslandScript island) {
+                    return true;
+                }
+            );
         }
+        gameMapManager.UpdateEffectByController(gameMap.transform);
     }
 }

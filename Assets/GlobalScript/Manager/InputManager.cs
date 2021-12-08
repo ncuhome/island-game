@@ -9,7 +9,7 @@ namespace Manager {
         /// <summary>
         /// 单击事件绑定
         /// </summary>
-
+        public void test(Vector2 pos) { }
         public ScreenInputEvent singleTouch;
         /// <summary>
         /// 双击事件绑定(未实现
@@ -23,6 +23,8 @@ namespace Manager {
         public ScreenInputEvent drag;
 
         private void Awake() {
+            InstanceManager.InputInstance = this;
+            singleTouch = new ScreenInputEvent(test);
             Input.multiTouchEnabled = false;
             InstanceManager.InputInstance = this;
         }
@@ -36,7 +38,7 @@ namespace Manager {
             }
 
             /* !!!WARNING!!! 以下是该死的测试代码，如果在发行中出现了该代码请清理生成与发布选项中的DEBUG宏定义 */
-#if DEBUG
+#if UNITY_EDITOR
             if (Input.GetMouseButtonDown(0)) {
                 singleTouch(Input.mousePosition);
             }

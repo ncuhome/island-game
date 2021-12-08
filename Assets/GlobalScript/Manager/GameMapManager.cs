@@ -33,13 +33,35 @@ namespace Manager {
             this.mapWidth = mapWidth;
         }
 
+        const int EF_NUM = 33123;
+
+        public void UpdateEffectByController(Transform par) {
+            InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
+            if (interestEmpty.x >= 0 && interestEmpty.y >= 0) {    
+                GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
+                tmp.transform.parent = par;
+                tmp.transform.localScale = Vector3.one;
+                tmp.transform.localPosition = new Vector3(interestEmpty.x,interestEmpty.y);
+            } else {
+                for (int i = 0; i < mapWidth; i++) {
+                    for (int r = 0; r < mapHeight; r++) {
+                        if (pIslandObj[i, r] != null&&pIslandObj[i,r].isInterestIsland) {
+                            GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
+                            tmp.transform.parent = par;
+                            tmp.transform.localScale = Vector3.one;
+                            tmp.transform.localPosition = new Vector3(i, r);
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public IslandScript touchIsland(Vector2Int pos) {
+        public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace) {
             IslandScript ret = null;
             if (pIslandObj[pos.x, pos.y] != null) {
                 ret = pIslandObj[pos.x, pos.y];
@@ -54,7 +76,8 @@ namespace Manager {
                 }
             } else {
                 if (interestEmpty == pos) {
-                    PlaceIsland(IslandType.SMALL_ISLAND, pos);
+                    PlaceIsland(IslandType.SMALL_ISLAND,pos,islandWaitPlace);
+                    ret = pIslandObj[pos.x,pos.y];
                     interestEmpty.x = interestEmpty.y = -1;
                 }
                 else
@@ -66,10 +89,13 @@ namespace Manager {
         /// <summary>
         /// 根据gameMap更新pIslandObj
         /// </summary>
-        private void UpdateIslandGameObject() {
+        public void UpdateIslandGameObject() {
             for(int i = 0; i < mapWidth; i++) {
                 for(int r = 0; r < mapHeight; r++) {
-                    //这地方到底要放啥  
+                    if (pIslandObj[i, r] != null) {
+                        pIslandObj[i, r].islandType = gameMap[i, r];
+                        pIslandObj[i, r].UpdateByManager(i, r);
+                    }
                 }
             }
         }
@@ -80,12 +106,14 @@ namespace Manager {
         /// <param name="island">岛屿类型</param>
         /// <param name="pos">坐标</param>
         /// <returns>是否成功放置岛屿</returns>
-        public bool PlaceIsland(IslandType island, Vector2Int pos) {
+        public bool PlaceIsland(IslandType island, Vector2Int pos,GameObject islandWaitPlace) {
             if (gameMap[pos.x, pos.y] != IslandType.EMPTY) {
                 return false;
             }
             gameMap[pos.x, pos.y] = island;
-            
+            islandWaitPlace.SetActive(true);
+            pIslandObj[pos.x,pos.y] = islandWaitPlace.GetComponent<IslandScript>();
+            UpdateIslandGameObject();
             return true;
         }
 
@@ -94,7 +122,10 @@ namespace Manager {
         /// </summary>
         /// <param name="pos">被摧毁岛屿的坐标</param>
         public void DestroyIsland(Vector2Int pos) {
+            //别听VS的简化，这样比较清晰
+            GameObject.Destroy(pIslandObj[pos.x, pos.y].gameObject);
             gameMap[pos.x, pos.y] = IslandType.EMPTY;
+            UpdateIslandGameObject();
         }
 
         /// <summary>
@@ -105,22 +136,28 @@ namespace Manager {
         //如果MIN_MIXED_NUM>3，把这个方法改成并查集实现
         public bool MixedIsland(List<IslandScript> list) {
             if (list.Count != 3) return false;
+            int cnt = 0;
             for(int i = 0; i < MIN_MIXED_NUM; ++i) {
                 for (int r = 0; r < MIN_MIXED_NUM; ++r) {
                     Vector2Int pos = list[i].GetIslandPosInMap() - list[r].GetIslandPosInMap();
-                    if (!(pos == Vector2Int.up ||
+                    if (pos == Vector2Int.up ||
                         pos == Vector2Int.down ||
                         pos == Vector2Int.left ||
-                        pos == Vector2Int.right)) {
-                        return false;
+                        pos == Vector2Int.right||
+                        canMixed(list[i].islandType,list[r].islandType)) {
+                        cnt += 1;
+                        break;
                     }
                 }     
             }
+            if (cnt < MIN_MIXED_NUM) return false;
             Vector2Int t = list[MIN_MIXED_NUM - 1].GetIslandPosInMap();
             gameMap[t.x, t.y] = getNextIslandType(gameMap[t.x,t.y]);
+            pIslandObj[t.x, t.y].MixedAsMain(list[0],list[1]);
             for(int i = 0; i < MIN_MIXED_NUM-1; ++i) {
-                gameMap[list[i].GetIslandPosInMap().x, list[i].GetIslandPosInMap().y] = IslandType.EMPTY;
+                DestroyIsland(new Vector2Int(list[i].GetIslandPosInMap().x, list[i].GetIslandPosInMap().y));
             }
+            UpdateEffectByController(pIslandObj[t.x, t.y].transform.parent);
             return true;
         }
 
