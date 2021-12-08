@@ -140,17 +140,23 @@ namespace Manager {
             for(int i = 0; i < MIN_MIXED_NUM; ++i) {
                 for (int r = 0; r < MIN_MIXED_NUM; ++r) {
                     Vector2Int pos = list[i].GetIslandPosInMap() - list[r].GetIslandPosInMap();
-                    if (pos == Vector2Int.up ||
+                    if ((pos == Vector2Int.up ||
                         pos == Vector2Int.down ||
                         pos == Vector2Int.left ||
-                        pos == Vector2Int.right||
+                        pos == Vector2Int.right)&&
                         canMixed(list[i].islandType,list[r].islandType)) {
                         cnt += 1;
                         break;
                     }
                 }     
             }
-            if (cnt < MIN_MIXED_NUM) return false;
+            if (cnt < MIN_MIXED_NUM) {
+                foreach(IslandScript i in list) {
+                    i.isInterestIsland = false;
+                }
+                UpdateEffectByController(list[0].transform.parent);
+                return false;
+            }
             Vector2Int t = list[MIN_MIXED_NUM - 1].GetIslandPosInMap();
             gameMap[t.x, t.y] = getNextIslandType(gameMap[t.x,t.y]);
             pIslandObj[t.x, t.y].MixedAsMain(list[0],list[1]);
