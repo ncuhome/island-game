@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Manager {
     /// <summary>
-    /// 游戏地图管理器，线程非安全
+    /// 游戏地图管理器
     /// </summary>
     public class GameMapManager
     {
@@ -15,9 +15,11 @@ namespace Manager {
         /// <summary>
         /// 最小岛屿合成数量
         /// </summary>
+        //特效魔数
+        const int EF_NUM = 33123;
         public const int MIN_MIXED_NUM = 3;
         IslandType[,] gameMap = new IslandType[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
-        public IslandScript[,] pIslandObj = new IslandScript[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
+        public IslandScript[,] pIslandScript = new IslandScript[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
 
         /// <summary>
         /// 
@@ -33,8 +35,13 @@ namespace Manager {
             this.mapWidth = mapWidth;
         }
 
-        const int EF_NUM = 33123;
+        
 
+
+        /// <summary>
+        /// 更新特效
+        /// </summary>
+        /// <param name="par">Map的Transform，方便调整特效大小</param>
         public void UpdateEffectByController(Transform par) {
             InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
             if (interestEmpty.x >= 0 && interestEmpty.y >= 0) {    
@@ -45,7 +52,7 @@ namespace Manager {
             } else {
                 for (int i = 0; i < mapWidth; i++) {
                     for (int r = 0; r < mapHeight; r++) {
-                        if (pIslandObj[i, r] != null&&pIslandObj[i,r].isInterestIsland) {
+                        if (pIslandScript[i, r] != null&&pIslandScript[i,r].isInterestIsland) {
                             GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
                             tmp.transform.parent = par;
                             tmp.transform.localScale = Vector3.one;
@@ -63,8 +70,8 @@ namespace Manager {
         /// <returns></returns>
         public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace) {
             IslandScript ret = null;
-            if (pIslandObj[pos.x, pos.y] != null) {
-                ret = pIslandObj[pos.x, pos.y];
+            if (pIslandScript[pos.x, pos.y] != null) {
+                ret = pIslandScript[pos.x, pos.y];
                 interestEmpty.x = -1;
                 interestEmpty.y = -1;
                 //重置空地兴趣点
@@ -77,7 +84,7 @@ namespace Manager {
             } else {
                 if (interestEmpty == pos) {
                     PlaceIsland(IslandType.SMALL_ISLAND,pos,islandWaitPlace);
-                    ret = pIslandObj[pos.x,pos.y];
+                    ret = pIslandScript[pos.x,pos.y];
                     interestEmpty.x = interestEmpty.y = -1;
                 }
                 else
@@ -92,9 +99,24 @@ namespace Manager {
         public void UpdateIslandGameObject() {
             for(int i = 0; i < mapWidth; i++) {
                 for(int r = 0; r < mapHeight; r++) {
-                    if (pIslandObj[i, r] != null) {
-                        pIslandObj[i, r].islandType = gameMap[i, r];
-                        pIslandObj[i, r].UpdateByManager(i, r);
+                    if (pIslandScript[i, r] != null) {
+                        pIslandScript[i, r].islandType = gameMap[i, r];
+                        pIslandScript[i, r].UpdateByManager(i, r);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 使用保存的地图更新IslandScript
+        /// </summary>
+        public void UpdateIslandByMap(GameObject islandObj,Transform mapPosBasementTransform) {
+            for(int i = 0; i < mapWidth; ++i) {
+                for(int r = 0; r < mapHeight; ++i) {
+                    if (pIslandScript[i, r] == null && gameMap[i, r] != IslandType.EMPTY) {
+                        GameObject tmp = GameObject.Instantiate(islandObj);
+                        tmp.transform.parent = mapPosBasementTransform;
+                        //TODO 上次写到这里 2021年12月8日22:50:43
                     }
                 }
             }
@@ -112,7 +134,7 @@ namespace Manager {
             }
             gameMap[pos.x, pos.y] = island;
             islandWaitPlace.SetActive(true);
-            pIslandObj[pos.x,pos.y] = islandWaitPlace.GetComponent<IslandScript>();
+            pIslandScript[pos.x,pos.y] = islandWaitPlace.GetComponent<IslandScript>();
             UpdateIslandGameObject();
             return true;
         }
@@ -123,7 +145,7 @@ namespace Manager {
         /// <param name="pos">被摧毁岛屿的坐标</param>
         public void DestroyIsland(Vector2Int pos) {
             //别听VS的简化，这样比较清晰
-            GameObject.Destroy(pIslandObj[pos.x, pos.y].gameObject);
+            GameObject.Destroy(pIslandScript[pos.x, pos.y].gameObject);
             gameMap[pos.x, pos.y] = IslandType.EMPTY;
             UpdateIslandGameObject();
         }
@@ -159,11 +181,11 @@ namespace Manager {
             }
             Vector2Int t = list[MIN_MIXED_NUM - 1].GetIslandPosInMap();
             gameMap[t.x, t.y] = getNextIslandType(gameMap[t.x,t.y]);
-            pIslandObj[t.x, t.y].MixedAsMain(list[0],list[1]);
+            pIslandScript[t.x, t.y].MixedAsMain(list[0],list[1]);
             for(int i = 0; i < MIN_MIXED_NUM-1; ++i) {
                 DestroyIsland(new Vector2Int(list[i].GetIslandPosInMap().x, list[i].GetIslandPosInMap().y));
             }
-            UpdateEffectByController(pIslandObj[t.x, t.y].transform.parent);
+            UpdateEffectByController(pIslandScript[t.x, t.y].transform.parent);
             return true;
         }
 

@@ -27,10 +27,23 @@ public class SeaController : MonoBehaviour
         mapPosBasement.ResetMapPos();
     }
 
+    void InitBySave() {
+        SaveDate sd = Saver.saveDate;
+        gameMapManager = new Manager.GameMapManager(sd.seaWidth, sd.seaHeight);
+        mapPosBasement = gameMap.GetComponent<MapPosBasement>();
+
+
+    }
+
     private void Start() {
         Manager.InstanceManager.InputInstance.singleTouch += new Manager.ScreenInputEvent(SeaControlTouchEvent);
-        //检测存档文件，确认是否有存档
-        InitByStart();
+        if (GameStateManager.instance.isLoadDate) {
+
+        }
+        else {
+            InitByStart();
+        }
+        
     }
 
     private void Update() {
