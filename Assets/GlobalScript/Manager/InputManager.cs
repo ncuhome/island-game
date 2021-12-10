@@ -24,9 +24,12 @@ namespace Manager {
 
         private void Awake() {
             InstanceManager.InputInstance = this;
-            singleTouch = new ScreenInputEvent(test);
+            if (InstanceManager.InputInstance != this) {
+                //µ¥ÀýÊ§°Ü
+                Destroy(gameObject);
+            }
             Input.multiTouchEnabled = false;
-            InstanceManager.InputInstance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
         private void Update() {

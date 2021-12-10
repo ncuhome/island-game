@@ -31,8 +31,6 @@ public class SeaController : MonoBehaviour
         SaveDate sd = Saver.saveDate;
         gameMapManager = new Manager.GameMapManager(sd.seaWidth, sd.seaHeight);
         mapPosBasement = gameMap.GetComponent<MapPosBasement>();
-
-
     }
 
     private void Start() {

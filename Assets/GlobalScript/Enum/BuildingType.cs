@@ -2,6 +2,7 @@
 public enum BuildingType {
     EMPTY = 0,
     BASIC_BUILDING = 1,
+    BARRIER=2,//×ÔÈ»ÕÏ°­
     LEVEL1_HOUSE = 1024 + 1,
     LEVEL1_WORKSHOP = 2048 + 1,
     LEVEL2_HOUSE = 1024 + 2,

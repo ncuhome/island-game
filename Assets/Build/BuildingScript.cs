@@ -8,6 +8,7 @@ public class BuildingScript : MonoBehaviour {
     public bool isInterestBuilding;
     SpriteRenderer spriteRenderer;
 
+
     /// <summary>
     /// 由管理器调用的Update
     /// </summary>
@@ -20,19 +21,46 @@ public class BuildingScript : MonoBehaviour {
         spriteRenderer.sprite = buildingSprite[GetSpriteIdByBuildType(buildingType)];
     }
 
+    /// <summary>
+    /// 作为主建筑合成
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="mixToWorkshop"></param>
+    public void MixedAsMain(BuildingScript a,BuildingScript b,bool mixToWorkshop) {
+        buildingType = GetNextBuildingType(buildingType,mixToWorkshop);
+        UpdateByManager((int)transform.localPosition.x,(int)transform.localPosition.y);
+        Destroy(a.gameObject);
+        Destroy(b.gameObject);
+    }
+
     public void UpdateByManager(Vector2Int pos) {
         UpdateByManager(pos.x, pos.y);
     }
-
+    //等梁老师图
     static int GetSpriteIdByBuildType(BuildingType buildingType) {
         //TODO
         return 0;
     }
 
+    /*
+     具体数值见数值附件
+     */
+    
     static public int BuildingPowerOutput(BuildingType buildingType) {
         switch (buildingType) {
             case BuildingType.EMPTY:
                 return 0;
+            case BuildingType.BASIC_BUILDING:
+                return 3;
+            case BuildingType.LEVEL1_HOUSE:
+                return 15;
+            case BuildingType.LEVEL2_HOUSE:
+                return 50;
+            case BuildingType.LEVEL3_HOUSE:
+                return 120;
+            case BuildingType.LEVEL4_HOUSE:
+                return 200;
             default:
                 return 0;
         }
@@ -42,12 +70,40 @@ public class BuildingScript : MonoBehaviour {
         switch (buildingType) {
             case BuildingType.EMPTY:
                 return 0;
+            case BuildingType.BASIC_BUILDING:
+                return 3;
+            case BuildingType.LEVEL1_WORKSHOP:
+                return 15;
+            case BuildingType.LEVEL2_WORKSHOP:
+                return 40;
+            case BuildingType.LEVEL3_WORKSHOP:
+                return 100;
+            case BuildingType.LEVEL4_WORKSHOP:
+                return 150;
             default:
                 return 0;
         }
     }
-
-    static public bool IsSame(BuildingType a, BuildingType b) {
+    
+    static public bool CanMixed(BuildingType a, BuildingType b) {
+        if (a == BuildingType.BARRIER || b == BuildingType.BARRIER) return false;
         return a == b;
+    }
+
+    static public BuildingType GetNextBuildingType(BuildingType buildingType,bool mixToWorkshop) {
+        switch (buildingType) {
+            case BuildingType.BASIC_BUILDING:
+                if (mixToWorkshop) return BuildingType.LEVEL1_WORKSHOP;
+                else return BuildingType.LEVEL1_HOUSE;
+            case BuildingType.LEVEL1_HOUSE:
+            case BuildingType.LEVEL2_HOUSE:
+            case BuildingType.LEVEL3_HOUSE:
+            case BuildingType.LEVEL1_WORKSHOP:
+            case BuildingType.LEVEL2_WORKSHOP:
+            case BuildingType.LEVEL3_WORKSHOP:
+                return buildingType + 1;
+            default:
+                return BuildingType.EMPTY;
+        }
     }
 }
