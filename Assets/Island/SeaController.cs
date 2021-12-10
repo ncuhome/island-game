@@ -38,8 +38,8 @@ public class SeaController : MonoBehaviour
     private void Start() {
         Manager.InstanceManager.InputInstance.singleTouch += new Manager.ScreenInputEvent(SeaControlTouchEvent);
         if (GameStateManager.instance.isLoadDate) {
-
-        }
+            InitByStart();
+        } 
         else {
             InitByStart();
         }

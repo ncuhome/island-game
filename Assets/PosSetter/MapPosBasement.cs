@@ -44,9 +44,11 @@ public class MapPosBasement : MonoBehaviour
     /// <param name="pos">世界坐标</param>
     /// <returns>地图坐标，为一个整数</returns>
     public Vector2Int WorldToMapPoint(Vector3 pos) {
+        print("World"+pos);
         pos=transform.InverseTransformPoint(pos);
         pos.x += 0.5f;
         pos.y += 0.5f;
+        
         return new Vector2Int((int)pos.x, (int)pos.y);
     }
     /// <summary>
@@ -55,6 +57,7 @@ public class MapPosBasement : MonoBehaviour
     /// <param name="pos"></param>
     /// <returns></returns>
     public Vector2Int ScreenToMapPoint(Vector3 pos) {
+        print("Screen"+pos);
         return WorldToMapPoint(Camera.main.ScreenToWorldPoint(pos));
     }
 }

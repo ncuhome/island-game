@@ -18,11 +18,11 @@ public class SaveDate
 public class IslandDate {
     public Vector2Int pos;
     public IslandType islandType;
-    public List<BuildDate> buildDates=new List<BuildDate>();
+    public List<BuildingDate> buildingDates=new List<BuildingDate>();
 }
 
 [SerializeField]
-public class BuildDate {
+public class BuildingDate {
     public Vector2Int pos;
-    public BuildType buildType;
+    public BuildingType buildingType;
 }
