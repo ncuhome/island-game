@@ -27,8 +27,21 @@ public class IslandScript : MonoBehaviour
         return new Vector2Int((int)(transform.localPosition.x + 0.5f), (int)(transform.localPosition.y + 0.5f));
     }
 
-    //TODO 没写完！没写完！没写完！！！！
+    public int DestroyIslandGold() {
+        int sum = 0;
+        foreach (BuildingDate bd in pIslandDate.buildingDates) {
+            sum += BuildingScript.GetDestroyMoney(bd.buildingType);
+        }
+        return sum;
+    }
+
+    /// <summary>
+    /// 作为主岛进行合并
+    /// </summary>
+    /// <param name="islandA"></param>
+    /// <param name="islandB"></param>
     public void MixedAsMain(IslandScript islandA,IslandScript islandB) {
+        Saver.saveDate.gold += islandA.DestroyIslandGold() + islandB.DestroyIslandGold();
         islandType = Manager.GameMapManager.getNextIslandType(islandType);
         islandA.isInterestIsland = islandB.isInterestIsland = isInterestIsland = false;
     }

@@ -10,12 +10,28 @@ public class IslandMapManager:MonoBehaviour
     public int islandWidth;
     public int islandHeight;
     const int MAX_ISLAND_LENGHT=30;
+    const int MIN_MIXED_NUM = 3;
     public BuildingScript[,] pBuildingScript = new BuildingScript[MAX_ISLAND_LENGHT, MAX_ISLAND_LENGHT];
+    public Vector2Int interestPos=new Vector2Int(-1,-1);
+    public bool isMixToWorkShop = false;
+    public BuildingType nextBuilding;
+
+
+    private void Start() {
+        LoadByDate();
+        Manager.InstanceManager.InputInstance.singleTouch += this.BuildingTouchEvent;
+    }
+
+    private void OnDestroy() {
+        SaveToDate();
+        Manager.InstanceManager.InputInstance.singleTouch -= this.BuildingTouchEvent;
+    }
 
     /// <summary>
-    /// 保存数据(没有必要的话，别一直用)
+    /// 保存数据
     /// </summary>
     public void SaveToDate() {
+        Saver.saveDate.nextBuildingType = nextBuilding;
         islandDate.buildingDates.Clear();
         for(int i=0;i<islandWidth;++i)
             for(int r = 0; r < islandHeight; ++r) {
@@ -29,20 +45,40 @@ public class IslandMapManager:MonoBehaviour
                 }
             }
     }
+
+    void setBuilding(Vector2Int pos, BuildingType buildingType) {
+        GameObject tmp = GameObject.Instantiate(buildingObj);
+        BuildingScript bs = pBuildingScript[pos.x, pos.y] = tmp.GetComponent<BuildingScript>();
+        bs.buildingType = buildingType;
+        bs.transform.parent = mapPosBasement.transform;
+        bs.UpdateByManager(pos);
+    }
+
+    void GetNextSetBuilding() {
+        int rand=Random.Range(0, 100);
+        if (rand < 80) {
+            nextBuilding = BuildingType.BASIC_BUILDING;
+        }else if (rand < 88) {
+            nextBuilding = BuildingType.LEVEL1_HOUSE;
+        }else if (rand < 92) {
+            nextBuilding = BuildingType.BARRIER;
+        } else {
+            nextBuilding = BuildingType.LEVEL1_WORKSHOP;
+        }
+        Saver.saveDate.nextBuildingType = nextBuilding;
+    }
     /// <summary>
     /// 加载数据
     /// </summary>
     public void LoadByDate() {
+        nextBuilding = Saver.saveDate.nextBuildingType;
         islandWidth = islandDate.pos.x;
         islandHeight = islandDate.pos.y;
         mapPosBasement.mapWidth = islandWidth;
         mapPosBasement.mapHeight = islandHeight;
         mapPosBasement.ResetMapPos();
         foreach (BuildingDate bd in islandDate.buildingDates) {
-            GameObject tmp = GameObject.Instantiate(buildingObj);
-            BuildingScript bs = pBuildingScript[bd.pos.x, bd.pos.y] = tmp.GetComponent<BuildingScript>();
-            bs.transform.parent = mapPosBasement.transform;
-            bs.UpdateByManager(bd.pos);
+            setBuilding(bd.pos, bd.buildingType);
         }
     }
     /// <summary>
@@ -54,6 +90,84 @@ public class IslandMapManager:MonoBehaviour
         LoadByDate();
     }
 
+    public void BuildingTouchEvent(Vector2 pos) {
+        Vector2Int intPos = mapPosBasement.ScreenToMapPoint(pos);
+        if (intPos.x >= islandWidth || intPos.x < 0 || intPos.y >= islandHeight || intPos.y < 0) return;
+        //兴趣点不等于点击点 取消兴趣点
+        if (intPos != interestPos) {
+            interestPos = intPos;
+            List<Vector2Int> list;//特效点位
+            BuildingType finallyBuilding;
+            if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {
+                //添加可合成特效
+            }
+            
+        }
+        //兴趣点等于点击点
+        else {
+            //如果是空地（为之后道具预留）
+            if (pBuildingScript[intPos.x, intPos.y] == null) {
+                List<Vector2Int> list;
+                BuildingType finallyBuilding;
+                if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {
+                    //删除list上的所有建筑
+                } else {
+                    setBuilding(intPos, nextBuilding);
+                }
+                GetNextSetBuilding();
+            }
+        }
+    }
 
 
+
+
+    /// <summary>
+    /// 检测在某坐标处是否允许合成建筑
+    /// </summary>
+    /// <param name="building">建筑类型</param>
+    /// <param name="pos">坐标</param>
+    /// <param name="list">如果允许合成，则返回一个该合成中会使用的建筑坐标列表，如果不允许，则不保证返回值</param>
+    /// <param name="finallyBuilding">如果允许合成，则返回该合成最终会生成的建筑类型</param>
+    /// <returns>是否允许合成建筑</returns>
+    /// 
+    public bool MixedIsAllow(BuildingType building, Vector2Int pos, out List<Vector2Int> list, out BuildingType finallyBuilding) {
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        bool[,] gameMapMemory = new bool[islandWidth, islandHeight];
+        queue.Enqueue(pos);
+        //搜索顺序
+        Vector2Int[] posMove = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+        list = new List<Vector2Int>();
+        while (queue.Count > 0) {
+            Vector2Int nowPos = queue.Dequeue();
+            foreach (Vector2Int move in posMove) {
+                nowPos += move;
+                if (nowPos.x >= 0 &&
+                    nowPos.x < islandWidth &&
+                    nowPos.y >= 0 &&
+                    nowPos.y < islandHeight &&
+                    gameMapMemory[nowPos.x, nowPos.y] == false &&
+                    pBuildingScript[nowPos.x,nowPos.y]!=null) {
+                    if (BuildingScript.CanMixed(pBuildingScript[nowPos.x, nowPos.y].buildingType, building)) {
+                        queue.Enqueue(nowPos);
+                        list.Add(nowPos);
+                        gameMapMemory[nowPos.x, nowPos.y] = true;
+                    }
+                }
+                nowPos -= move;
+            }
+        }
+        if (list.Count >= MIN_MIXED_NUM - 1) {
+            List<Vector2Int> tmp;
+            finallyBuilding = BuildingScript.GetNextBuildingType(building,isMixToWorkShop);
+            if (MixedIsAllow(BuildingScript.GetNextBuildingType(building, isMixToWorkShop), pos, out tmp, out finallyBuilding)) {
+                list.AddRange(tmp);
+            }
+            return true;
+        } else {
+            list = null;
+            finallyBuilding = BuildingType.EMPTY;
+            return false;
+        }
+    }
 }

@@ -66,6 +66,33 @@ public class BuildingScript : MonoBehaviour {
         }
     }
 
+    static public int GetDestroyMoney(BuildingType buildingType) {
+        switch (buildingType) {
+            case BuildingType.BARRIER:
+                return 500;
+            case BuildingType.BASIC_BUILDING:
+                return 5;
+            case BuildingType.LEVEL1_HOUSE:
+                return 20;
+            case BuildingType.LEVEL1_WORKSHOP:
+                return 30;
+            case BuildingType.LEVEL2_WORKSHOP:
+                return 100;
+            case BuildingType.LEVEL2_HOUSE:
+                return 80;
+            case BuildingType.LEVEL3_WORKSHOP:
+                return 300;
+            case BuildingType.LEVEL3_HOUSE:
+                return 200;
+            case BuildingType.LEVEL4_HOUSE:
+                return 400;
+            case BuildingType.LEVEL4_WORKSHOP:
+                return 600;
+            default:
+                return 0;
+        }
+    }
+
     static public int BuildingGoldOutput(BuildingType buildingType) {
         switch (buildingType) {
             case BuildingType.EMPTY:

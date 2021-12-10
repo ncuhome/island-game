@@ -31,6 +31,14 @@ public class SeaController : MonoBehaviour
         SaveDate sd = Saver.saveDate;
         gameMapManager = new Manager.GameMapManager(sd.seaWidth, sd.seaHeight);
         mapPosBasement = gameMap.GetComponent<MapPosBasement>();
+        mapPosBasement.mapWidth = sd.seaWidth;
+        mapPosBasement.mapHeight = sd.seaHeight;
+        mapPosBasement.ResetMapPos();
+        foreach(IslandDate id in sd.islandDates) {
+            GameObject tmp = Instantiate(islandObj);
+
+            gameMapManager.pIslandScript[id.pos.x,id.pos.y]
+        }
     }
 
     private void Start() {

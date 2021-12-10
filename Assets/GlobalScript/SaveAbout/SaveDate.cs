@@ -12,6 +12,7 @@ public class SaveDate
     public System.Int64 power;
     public System.Int64 gold;
     public List<IslandDate> islandDates=new List<IslandDate>();
+    public BuildingType nextBuildingType;
 }
 
 [SerializeField]

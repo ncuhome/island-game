@@ -117,7 +117,7 @@ namespace Manager {
                     if (pIslandScript[i, r] == null && gameMap[i, r] != IslandType.EMPTY) {
                         GameObject tmp = GameObject.Instantiate(islandObj);
                         tmp.transform.parent = mapPosBasementTransform;
-                        //TODO 上次写到这里 2021年12月8日22:50:43
+                        
                     }
                 }
             }
@@ -245,11 +245,7 @@ namespace Manager {
         /// <param name="b">第二个岛屿</param>
         /// <returns>是否可以合成</returns>
         public static bool canMixed(IslandType a,IslandType b) {
-            if(a>b) {
-                IslandType tmp = b;
-                b = a;
-                a = tmp;
-            }
+            if (a == IslandType.EMPTY || a == IslandType.LARGE_ISLAND || b == IslandType.EMPTY || b == IslandType.LARGE_ISLAND) return false;
             return a == b;
         }
 
