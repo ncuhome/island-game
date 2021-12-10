@@ -21,6 +21,11 @@ namespace Effect {
         public Hashtable highLightMap=new Hashtable(); 
         public void Awake() {
             Manager.InstanceManager.EffectInstance = this;
+            if (Manager.InstanceManager.EffectInstance != this) {
+                Destroy(gameObject);
+                return;
+            }
+            DontDestroyOnLoad(gameObject);
         }
         
         public GameObject GetHighLightByNum(int num) {

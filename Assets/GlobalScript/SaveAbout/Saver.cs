@@ -7,7 +7,6 @@ public static class Saver {
     static public SaveDate saveDate;
     static public IslandDate pNowIslandDate;
     //Scene之间转换用的！！！！
-    static public int indexIsland;
     /// <summary>
     /// 加载Json存档
     /// </summary>

@@ -7,6 +7,7 @@ public class SeaController : MonoBehaviour
     public GameObject gameMap;
     public GameObject islandObj;
     public GameObject islandObjInHand;
+    public GameObject gotoIslandButton;
     MapPosBasement mapPosBasement;
     Manager.GameMapManager gameMapManager;
     /// <summary>
@@ -39,15 +40,15 @@ public class SeaController : MonoBehaviour
             tmp.transform.parent = mapPosBasement.transform;
             IslandScript pTmp= tmp.GetComponent<IslandScript>();
             pTmp.islandType = id.islandType;
+            pTmp.pIslandDate = id;
             gameMapManager.PlaceIsland(id.islandType, id.pos, tmp);
-            //TODO 2021年12月11日03:32:49写到这里
         }
     }
 
     private void Start() {
         Manager.InstanceManager.InputInstance.singleTouch += new Manager.ScreenInputEvent(SeaControlTouchEvent);
         if (GameStateManager.instance.isLoadDate) {
-            InitByStart();
+            InitBySave();
         } 
         else {
             InitByStart();
@@ -60,6 +61,12 @@ public class SeaController : MonoBehaviour
             islandObjInHand = Instantiate(islandObj);
             islandObjInHand.transform.parent = mapPosBasement.transform;
             islandObjInHand.SetActive(false);
+        }
+    }
+
+    public void gotoIslandScene() {
+        if (interestIslandList.Count == 1) {
+            Saver.pNowIslandDate = interestIslandList[0].pIslandDate;
         }
     }
 
@@ -94,6 +101,11 @@ public class SeaController : MonoBehaviour
                     return true;
                 }
             );
+        }
+        if (interestIslandList.Count == 1) {
+            gotoIslandButton.SetActive(true);
+        } else {
+            gotoIslandButton.SetActive(false);
         }
         gameMapManager.UpdateEffectByController(gameMap.transform);
     }
