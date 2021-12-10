@@ -36,8 +36,11 @@ public class SeaController : MonoBehaviour
         mapPosBasement.ResetMapPos();
         foreach(IslandDate id in sd.islandDates) {
             GameObject tmp = Instantiate(islandObj);
-
-            gameMapManager.pIslandScript[id.pos.x,id.pos.y]
+            tmp.transform.parent = mapPosBasement.transform;
+            IslandScript pTmp= tmp.GetComponent<IslandScript>();
+            pTmp.islandType = id.islandType;
+            gameMapManager.PlaceIsland(id.islandType, id.pos, tmp);
+            //TODO 2021年12月11日03:32:49写到这里
         }
     }
 
