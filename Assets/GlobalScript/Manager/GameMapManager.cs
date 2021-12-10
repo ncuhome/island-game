@@ -11,7 +11,7 @@ namespace Manager {
         public int mapWidth { get; private set; } = 3;
         public int mapHeight { get; private set; } = 3;
         const int MAX_MAP_LENGHT = 30;
-        public Vector2Int interestEmpty;
+        public Vector2Int interestEmpty=new Vector2Int(-1,-1);
         /// <summary>
         /// 最小岛屿合成数量
         /// </summary>
@@ -70,6 +70,7 @@ namespace Manager {
         /// <returns></returns>
         public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace) {
             IslandScript ret = null;
+            if (pos.x >= mapWidth || pos.x < 0 || pos.y >= mapHeight || pos.y < 0) return null;
             if (pIslandScript[pos.x, pos.y] != null) {
                 ret = pIslandScript[pos.x, pos.y];
                 interestEmpty.x = -1;
