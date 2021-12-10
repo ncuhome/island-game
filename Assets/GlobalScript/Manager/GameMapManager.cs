@@ -35,7 +35,16 @@ namespace Manager {
             this.mapWidth = mapWidth;
         }
 
-        
+        public void InitBySave(GameObject IslandObj,Transform mapPosTransform) {
+            List<IslandDate> list = Saver.saveDate.islandDates;
+            foreach(IslandDate date in list) {
+                GameObject tmp = GameObject.Instantiate(IslandObj);
+                tmp.transform.parent = mapPosTransform;
+                tmp.transform.localScale = Vector3.one;
+                tmp.transform.localPosition = new Vector3(date.pos.x, date.pos.y);
+
+            }
+        }
 
 
         /// <summary>

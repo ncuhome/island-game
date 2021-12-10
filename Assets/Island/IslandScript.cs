@@ -25,6 +25,10 @@ public class IslandScript : MonoBehaviour
         else spriteRenderer.sprite = islandSprite[(int)islandType - 1];
     }
 
+    public void InitBySave() {
+
+    }
+
     public Vector2Int GetIslandPosInMap() {
         return new Vector2Int((int)(transform.localPosition.x + 0.5f), (int)(transform.localPosition.y + 0.5f));
     }

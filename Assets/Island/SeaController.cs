@@ -31,14 +31,16 @@ public class SeaController : MonoBehaviour
         SaveDate sd = Saver.saveDate;
         gameMapManager = new Manager.GameMapManager(sd.seaWidth, sd.seaHeight);
         mapPosBasement = gameMap.GetComponent<MapPosBasement>();
-
+        mapPosBasement.mapHeight = sd.seaHeight;
+        mapPosBasement.mapWidth = sd.seaWidth;
+        mapPosBasement.ResetMapPos();
 
     }
 
     private void Start() {
         Manager.InstanceManager.InputInstance.singleTouch += new Manager.ScreenInputEvent(SeaControlTouchEvent);
         if (GameStateManager.instance.isLoadDate) {
-
+            InitBySave();
         }
         else {
             InitByStart();
