@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8ce6920c8de5fc43bc23eee1d07947f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingObj: {fileID: 0}
+  buildingObj: {fileID: 8966353476886362155, guid: b0f4dd49984bfb144ba3d6680c517e70, type: 3}
   mapPosBasement: {fileID: 0}
   islandWidth: 0
   islandHeight: 0
