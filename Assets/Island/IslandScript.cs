@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class IslandScript : MonoBehaviour
 {
-    //TODO 岛屿上建筑管理占位符
-    public IslandMapManager islandMapManager;
+    public IslandDate pIslandDate;
     public IslandType islandType=IslandType.SMALL_ISLAND;
     public Sprite[] islandSprite;
     public bool isInterestIsland = false;
@@ -18,9 +17,8 @@ public class IslandScript : MonoBehaviour
         if (spriteRenderer == null) {
             spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         }
-        transform.localScale =new Vector3(1,1,1);
+        transform.localScale =Vector3.one;
         transform.localPosition = new Vector3(x, y);
-        print((int)islandType - 1);
         if (islandType == IslandType.EMPTY) spriteRenderer.sprite = null;
         else spriteRenderer.sprite = islandSprite[(int)islandType - 1];
     }

@@ -5,12 +5,15 @@ using UnityEngine;
 
 public static class Saver {
     static public SaveDate saveDate;
+    static public IslandDate pNowIslandDate;
     /// <summary>
     /// 加载Json存档
     /// </summary>
     /// <returns>是否成功加载</returns>
     static public bool LoadJsonSave() {
+        Debug.Log(Application.dataPath + "/save.json");
         if (!File.Exists(Application.dataPath + "/save.json")) {
+            saveDate = new SaveDate();
             return false;
         }
         string json = File.ReadAllText(Application.dataPath + "/save.json");
