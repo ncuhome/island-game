@@ -15,6 +15,9 @@ public class MapPosBasement : MonoBehaviour
     private float screenToWorldScale;
     public int mapHeight = 3;
     public int mapWidth = 3;
+    public GameObject square;
+    public Color clrA = new Color(0xc4, 0xb2, 0x70);
+    public Color clrB = new Color(0xf0, 0xe2, 0xac);
     private void OnEnable() {
         ResetMapPos();
     }
@@ -36,6 +39,18 @@ public class MapPosBasement : MonoBehaviour
         transform.localScale = new Vector3(screenToWorldScale / mapHeight, screenToWorldScale / mapWidth, 1);
         transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width * widthInScreen, Screen.height * heightInScreen));
         transform.position = new Vector3(transform.position.x+transform.localScale.x*0.5f, transform.position.y+transform.localScale.y*0.5f, 0);
+    }
+
+    public void SpawnSquare() {
+        for(int i = 0; i < mapWidth; ++i) {
+            for(int r = 0; r < mapHeight; ++r) {
+                GameObject tmp = GameObject.Instantiate(square);
+                tmp.transform.parent = transform;
+                tmp.transform.localPosition =new Vector3(i, r, 1);
+                tmp.transform.localScale = Vector3.one;
+                tmp.GetComponent<SpriteRenderer>().color = (i + r) % 2 == 1 ? clrA : clrB;
+            }
+        }
     }
 
     /// <summary>

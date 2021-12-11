@@ -812,6 +812,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: clrA.b
+      value: 0.4392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: clrA.g
+      value: 0.69803923
+      objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: clrA.r
+      value: 0.76862746
+      objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: clrB.b
+      value: 0.6745098
+      objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: clrB.g
+      value: 0.8862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: clrB.r
+      value: 0.9411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 3223385223938886880, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
+      propertyPath: square
+      value: 
+      objectReference: {fileID: 7819619952473359326, guid: 7541e21335c71be458051c98bb28ff50, type: 3}
     - target: {fileID: 3223385223938886881, guid: bae6b1e7fa2a5c44495f43cf29af8b46, type: 3}
       propertyPath: m_Name
       value: GameMap

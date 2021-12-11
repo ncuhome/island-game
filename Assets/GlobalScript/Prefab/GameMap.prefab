@@ -49,3 +49,6 @@ MonoBehaviour:
   screenToWorldScale: 0
   mapHeight: 3
   mapWidth: 3
+  square: {fileID: 7819619952473359326, guid: 7541e21335c71be458051c98bb28ff50, type: 3}
+  clrA: {r: 0.76862746, g: 0.69803923, b: 0.4392157, a: 1}
+  clrB: {r: 0.9411765, g: 0.8862745, b: 0.6745098, a: 1}

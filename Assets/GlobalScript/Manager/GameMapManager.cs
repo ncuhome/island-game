@@ -48,7 +48,7 @@ namespace Manager {
                 GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
                 tmp.transform.parent = par;
                 tmp.transform.localScale = Vector3.one;
-                tmp.transform.localPosition = new Vector3(interestEmpty.x,interestEmpty.y);
+                tmp.transform.localPosition = new Vector3(interestEmpty.x,interestEmpty.y,-1);
             } else {
                 for (int i = 0; i < mapWidth; i++) {
                     for (int r = 0; r < mapHeight; r++) {
@@ -56,7 +56,7 @@ namespace Manager {
                             GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
                             tmp.transform.parent = par;
                             tmp.transform.localScale = Vector3.one;
-                            tmp.transform.localPosition = new Vector3(i, r);
+                            tmp.transform.localPosition = new Vector3(i, r,-1);
                         }
                     }
                 }

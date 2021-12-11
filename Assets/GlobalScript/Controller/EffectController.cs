@@ -30,9 +30,11 @@ namespace Effect {
         
         public GameObject GetHighLightByNum(int num) {
             if (!highLightMap.ContainsKey(num)) highLightMap.Add(num, new List<GameObject>());
-            GameObject tmp;
-            if (highLightPool.Count > 0) {
+            GameObject tmp=null;
+            while(highLightPool.Count > 0 && !(tmp == null)) {
                 tmp = highLightPool.Pop();
+            }
+            if (!(tmp==null)) {
                 tmp.SetActive(true);
             } else {
                 tmp = Instantiate(highLight);

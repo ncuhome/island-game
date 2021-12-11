@@ -11,6 +11,7 @@ public class IslandMapManager:MonoBehaviour
     public int islandHeight;
     const int MAX_ISLAND_LENGHT=30;
     const int MIN_MIXED_NUM = 3;
+    const int EF_NUM = 424233;
     public BuildingScript[,] pBuildingScript = new BuildingScript[MAX_ISLAND_LENGHT, MAX_ISLAND_LENGHT];
     public Vector2Int interestPos=new Vector2Int(-1,-1);
     public bool isMixToWorkShop = false;
@@ -69,6 +70,17 @@ public class IslandMapManager:MonoBehaviour
     /// <summary>
     /// 加载数据
     /// </summary>
+    
+    void SetEFInList(List<Vector2Int> list) {
+        Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
+        foreach(Vector2Int pos in list) {
+            GameObject tmp = Manager.InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
+            tmp.transform.parent = mapPosBasement.transform;
+            tmp.transform.localScale = Vector3.one;
+            tmp.transform.localPosition = new Vector3(pos.x, pos.y, -1);
+        }
+    }
+
     public void LoadByDate() {
         islandDate = Saver.pNowIslandDate;
         nextBuilding = Saver.saveDate.nextBuildingType;
@@ -89,6 +101,7 @@ public class IslandMapManager:MonoBehaviour
         mapPosBasement.mapWidth = islandWidth;
         mapPosBasement.mapHeight = islandHeight;
         mapPosBasement.ResetMapPos();
+        mapPosBasement.SpawnSquare();
         foreach (BuildingDate bd in islandDate.buildingDates) {
             setBuilding(bd.pos, bd.buildingType);
         }
@@ -111,13 +124,18 @@ public class IslandMapManager:MonoBehaviour
             List<Vector2Int> list;//特效点位
             BuildingType finallyBuilding;
             if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {
-                //添加可合成特效
+                list.Add(intPos);
+                SetEFInList(list);
+            } else {
+                list = new List<Vector2Int>();
+                list.Add(intPos);
+                SetEFInList(list);
             }
             
         }
         //兴趣点等于点击点
         else {
-            //如果是空地（为之后道具预留）
+            //如果是空地（为之后道具预留不是空地）
             if (pBuildingScript[intPos.x, intPos.y] == null) {
                 List<Vector2Int> list;
                 BuildingType finallyBuilding;
@@ -130,6 +148,7 @@ public class IslandMapManager:MonoBehaviour
                 } else {
                     setBuilding(intPos, nextBuilding);
                 }
+                Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
                 GetNextSetBuilding();
                 SaveToDate();
             }
