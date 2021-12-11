@@ -37,7 +37,7 @@ public class IslandMapManager:MonoBehaviour
                 if (pBuildingScript[i, r] != null) {
                     islandDate.buildingDates.Add(
                         new BuildingDate(
-                            pBuildingScript[i, r].transform.position,
+                            pBuildingScript[i, r].transform.localPosition,
                             pBuildingScript[i, r].buildingType
                             )
                         );

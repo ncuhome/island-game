@@ -14,7 +14,6 @@ public static class Saver {
     static public bool LoadJsonSave() {
         Debug.Log(Application.dataPath + "/save.json");
         saveDate = new SaveDate();
-        return true;
         if (!File.Exists(Application.dataPath + "/save.json")) {
             
             return false;
