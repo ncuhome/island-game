@@ -106,5 +106,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f7275c1ad169ed14a9ad6e9697595f9a, type: 3}
   - {fileID: 21300000, guid: e5dec3c769accf348bb98a6c61d462dc, type: 3}
   - {fileID: 21300000, guid: 97fbdbf82cf3e6a4cae873fb9c920800, type: 3}
+  - {fileID: 0}
   buildingType: 0
   isInterestBuilding: 0

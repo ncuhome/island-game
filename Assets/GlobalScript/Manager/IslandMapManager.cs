@@ -26,7 +26,6 @@ public class IslandMapManager:MonoBehaviour
         SaveToDate();
         Manager.InstanceManager.InputInstance.singleTouch -= this.BuildingTouchEvent;
     }
-
     /// <summary>
     /// 保存数据
     /// </summary>
@@ -71,9 +70,22 @@ public class IslandMapManager:MonoBehaviour
     /// 加载数据
     /// </summary>
     public void LoadByDate() {
+        islandDate = Saver.pNowIslandDate;
         nextBuilding = Saver.saveDate.nextBuildingType;
-        islandWidth = islandDate.pos.x;
-        islandHeight = islandDate.pos.y;
+        int len=1;
+        switch (islandDate.islandType) {
+            case IslandType.SMALL_ISLAND:
+                len = 4;
+                break;
+            case IslandType.MEDIUM_ISLAND:
+                len = 5;
+                break;
+            case IslandType.LARGE_ISLAND:
+                len = 6;
+                break;
+        }
+        islandWidth = len;
+        islandHeight = len;
         mapPosBasement.mapWidth = islandWidth;
         mapPosBasement.mapHeight = islandHeight;
         mapPosBasement.ResetMapPos();
@@ -110,11 +122,16 @@ public class IslandMapManager:MonoBehaviour
                 List<Vector2Int> list;
                 BuildingType finallyBuilding;
                 if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {
-                    //删除list上的所有建筑
+                    foreach(Vector2Int ipos in list) {
+                        Destroy(pBuildingScript[ipos.x, ipos.y].gameObject);
+                        pBuildingScript[ipos.x, ipos.y] = null;
+                    }
+                    setBuilding(intPos, finallyBuilding);
                 } else {
                     setBuilding(intPos, nextBuilding);
                 }
                 GetNextSetBuilding();
+                SaveToDate();
             }
         }
     }
@@ -160,8 +177,10 @@ public class IslandMapManager:MonoBehaviour
         if (list.Count >= MIN_MIXED_NUM - 1) {
             List<Vector2Int> tmp;
             finallyBuilding = BuildingScript.GetNextBuildingType(building,isMixToWorkShop);
-            if (MixedIsAllow(BuildingScript.GetNextBuildingType(building, isMixToWorkShop), pos, out tmp, out finallyBuilding)) {
+            BuildingType nxtfinally;
+            if (MixedIsAllow(BuildingScript.GetNextBuildingType(building, isMixToWorkShop), pos, out tmp, out nxtfinally)) {
                 list.AddRange(tmp);
+                finallyBuilding = nxtfinally;
             }
             return true;
         } else {

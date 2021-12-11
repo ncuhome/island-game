@@ -15,7 +15,7 @@ public class BuildingScript : MonoBehaviour {
     /// <param name="x"></param>
     /// <param name="y"></param>
     public void UpdateByManager(int x, int y) {
-        if (spriteRenderer == null) gameObject.GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null) spriteRenderer=gameObject.GetComponent<SpriteRenderer>();
         transform.localPosition = new Vector3(x, y);
         transform.localScale = Vector3.one;
         spriteRenderer.sprite = buildingSprite[GetSpriteIdByBuildType(buildingType)];
@@ -39,8 +39,15 @@ public class BuildingScript : MonoBehaviour {
     }
     //µ»¡∫¿œ ¶Õº
     static int GetSpriteIdByBuildType(BuildingType buildingType) {
-        //TODO
-        return 0;
+        int bt = (int)buildingType;
+        if (buildingType == BuildingType.EMPTY) return 10;
+        if (bt < 1024) {
+            return bt - 1;
+        }
+        if (bt < 2048) {
+            return bt - 1024 + 5;
+        }
+        return bt-2048+1;
     }
 
     /*

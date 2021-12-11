@@ -32,7 +32,7 @@ namespace Manager {
             DontDestroyOnLoad(gameObject);
         }
 
-        private void Update() {
+        private void LateUpdate() {
             if (Input.touchCount > 0) {
                 if (Input.touches[0].phase == TouchPhase.Began) {
                     if(singleTouch!=null)

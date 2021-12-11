@@ -68,9 +68,13 @@ namespace Manager {
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace) {
+        public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace,out bool isOutRange) {
             IslandScript ret = null;
-            if (pos.x >= mapWidth || pos.x < 0 || pos.y >= mapHeight || pos.y < 0) return null;
+            isOutRange = false;
+            if (pos.x >= mapWidth || pos.x < 0 || pos.y >= mapHeight || pos.y < 0) {
+                isOutRange = true;
+                return null;
+            }
             if (pIslandScript[pos.x, pos.y] != null) {
                 ret = pIslandScript[pos.x, pos.y];
                 interestEmpty.x = -1;
@@ -109,15 +113,15 @@ namespace Manager {
         }
 
         /// <summary>
-        /// 使用保存的地图更新IslandScript
+        /// 更新date
         /// </summary>
-        public void UpdateIslandByMap(GameObject islandObj,Transform mapPosBasementTransform) {
+        public void SaveToDate() {
+            SaveDate sd = Saver.saveDate;
+            sd.islandDates.Clear();
             for(int i = 0; i < mapWidth; ++i) {
-                for(int r = 0; r < mapHeight; ++i) {
-                    if (pIslandScript[i, r] == null && gameMap[i, r] != IslandType.EMPTY) {
-                        GameObject tmp = GameObject.Instantiate(islandObj);
-                        tmp.transform.parent = mapPosBasementTransform;
-                        
+                for(int r = 0; r < mapHeight; ++r) {
+                    if (pIslandScript[i, r] != null) {
+                        sd.islandDates.Add(pIslandScript[i, r].pIslandDate);
                     }
                 }
             }
@@ -136,6 +140,7 @@ namespace Manager {
             gameMap[pos.x, pos.y] = island;
             islandWaitPlace.SetActive(true);
             pIslandScript[pos.x,pos.y] = islandWaitPlace.GetComponent<IslandScript>();
+            pIslandScript[pos.x, pos.y].pIslandDate = new IslandDate(pos, island);
             UpdateIslandGameObject();
             return true;
         }
