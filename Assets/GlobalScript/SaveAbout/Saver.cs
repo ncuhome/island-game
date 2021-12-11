@@ -15,7 +15,6 @@ public static class Saver {
         Debug.Log(Application.dataPath + "/save.json");
         saveDate = new SaveDate();
         if (!File.Exists(Application.dataPath + "/save.json")) {
-            
             return false;
         }
         string json = File.ReadAllText(Application.dataPath + "/save.json");
@@ -26,6 +25,7 @@ public static class Saver {
     /// 保存存档
     /// </summary>
     static public void SaveJson() {
+        if (saveDate == null) return;
         string json = JsonUtility.ToJson(saveDate);
         File.WriteAllText(Application.dataPath + "/save.json", json);
     }

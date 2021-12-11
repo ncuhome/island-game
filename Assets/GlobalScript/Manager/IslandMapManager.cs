@@ -24,7 +24,6 @@ public class IslandMapManager:MonoBehaviour
     }
 
     private void OnDestroy() {
-        SaveToDate();
         Manager.InstanceManager.InputInstance.singleTouch -= this.BuildingTouchEvent;
     }
     /// <summary>

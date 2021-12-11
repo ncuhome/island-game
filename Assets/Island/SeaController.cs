@@ -51,12 +51,9 @@ public class SeaController : MonoBehaviour
         InitBySave();
     }
 
-    private void OnDestroy() {
-        gameMapManager.SaveToDate();
-    }
-
     private void Update() {
         if (islandObjInHand == null) {
+            gameMapManager.SaveToDate();
             islandObjInHand = Instantiate(islandObj);
             islandObjInHand.transform.parent = mapPosBasement.transform;
             islandObjInHand.SetActive(false);
@@ -65,6 +62,7 @@ public class SeaController : MonoBehaviour
 
     public void gotoIslandScene() {
         if (interestIslandList.Count == 1) {
+            gameMapManager.SaveToDate();
             Saver.pNowIslandDate = interestIslandList[0].pIslandDate;
             SceneManager.LoadScene("Scenes/IslandScene");
         }

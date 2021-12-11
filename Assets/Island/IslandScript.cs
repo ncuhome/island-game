@@ -41,8 +41,9 @@ public class IslandScript : MonoBehaviour
     /// <param name="islandA"></param>
     /// <param name="islandB"></param>
     public void MixedAsMain(IslandScript islandA,IslandScript islandB) {
-        Saver.saveDate.gold += islandA.DestroyIslandGold() + islandB.DestroyIslandGold();
+        Saver.saveDate.gold += islandA.DestroyIslandGold() + islandB.DestroyIslandGold()+DestroyIslandGold();
         islandType = Manager.GameMapManager.getNextIslandType(islandType);
+        pIslandDate = new IslandDate(pIslandDate.pos, islandType);
         islandA.isInterestIsland = islandB.isInterestIsland = isInterestIsland = false;
     }
 }
