@@ -9,14 +9,14 @@ public class SaveDate
 {
     public int seaWidth;
     public int seaHeight;
-    public System.UInt64 lastTickTime;
-    public System.Int64 power;
-    public System.Int64 gold;
+    public System.Int64 lastTickTime;
+    public double power;
+    public double gold;
     public List<IslandDate> islandDates=new List<IslandDate>();
     public BuildingType nextBuildingType;
     public SaveDate() {
         seaHeight = seaWidth = 3;
-        lastTickTime = (ulong)DateTime.Now.Ticks;
+        lastTickTime = (long)(DateTime.Now - Saver.timeZero).TotalSeconds;
         power = 2000;
         gold = 1000;
         nextBuildingType = BuildingType.BASIC_BUILDING;
