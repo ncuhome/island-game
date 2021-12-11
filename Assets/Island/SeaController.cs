@@ -9,6 +9,8 @@ public class SeaController : MonoBehaviour
     public GameObject islandObj;
     public GameObject islandObjInHand;
     public GameObject gotoIslandButton;
+    public GameObject NoPowerLabel;
+    public float timer;
     MapPosBasement mapPosBasement;
     Manager.GameMapManager gameMapManager;
     /// <summary>
@@ -58,6 +60,12 @@ public class SeaController : MonoBehaviour
             islandObjInHand.transform.parent = mapPosBasement.transform;
             islandObjInHand.SetActive(false);
         }
+        if (Saver.saveDate.power < Manager.GameMapManager.ISLAND_COST && !NoPowerLabel.activeSelf) {
+            NoPowerLabel.SetActive(true);
+        }
+        else if (NoPowerLabel.activeSelf && Saver.saveDate.power >= Manager.GameMapManager.ISLAND_COST) {
+            NoPowerLabel.SetActive(false);
+        }
     }
 
     public void gotoIslandScene() {
@@ -68,6 +76,12 @@ public class SeaController : MonoBehaviour
         }
     }
 
+    public void returnToMain() {
+        Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(Manager.GameMapManager.EF_NUM);
+        gameMapManager.SaveToDate();
+        SceneManager.LoadScene("Scenes/StartScene");
+    }
+    
     public void SeaControlTouchEvent(Vector2 pos) {
         //∑¿÷π÷√ø’
         if (islandObjInHand == null) return;

@@ -1,10 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class IslandMapManager:MonoBehaviour
 {
     public GameObject buildingObj;
+    public GameObject NoGoldLabel;
+    public float timer;
+    public Image nextImage;
+    public Sprite[] sprites = new Sprite[4];
     public MapPosBasement mapPosBasement;
     public IslandDate islandDate;
     public int islandWidth;
@@ -14,13 +20,46 @@ public class IslandMapManager:MonoBehaviour
     const int EF_NUM = 424233;
     public BuildingScript[,] pBuildingScript = new BuildingScript[MAX_ISLAND_LENGHT, MAX_ISLAND_LENGHT];
     public Vector2Int interestPos=new Vector2Int(-1,-1);
-    public bool isMixToWorkShop = false;
+    public bool isMixToWorkShop = true;
     public BuildingType nextBuilding;
+    public const int BUILDING_COST = 2;
+    private void Update() {
+        if (timer > 0) {
+            timer -= Time.deltaTime;
+            if (timer <= 0) {
+                NoGoldLabel.SetActive(false);
+            }
+        }
+    }
 
+    public void ExchangeMix() {
+        isMixToWorkShop = !isMixToWorkShop;
+        CreateSwitch.instance.Exchange();
+    }
+
+    public void ShowNextBuilding() {
+        int tmp;
+        switch (Saver.saveDate.nextBuildingType) {
+            case BuildingType.BASIC_BUILDING:
+                tmp = 0;
+                break;
+            case BuildingType.BARRIER:
+                tmp = 1;
+                break;
+            case BuildingType.LEVEL1_HOUSE:
+                tmp = 2;
+                break;
+            default:
+                tmp = 3;
+                break;
+        }
+        nextImage.sprite = sprites[tmp];
+    }
 
     private void Start() {
         LoadByDate();
         Manager.InstanceManager.InputInstance.singleTouch += this.BuildingTouchEvent;
+        ShowNextBuilding();
     }
 
     private void OnDestroy() {
@@ -65,6 +104,7 @@ public class IslandMapManager:MonoBehaviour
             nextBuilding = BuildingType.LEVEL1_WORKSHOP;
         }
         Saver.saveDate.nextBuildingType = nextBuilding;
+        ShowNextBuilding();
     }
     /// <summary>
     /// 加载数据
@@ -78,6 +118,12 @@ public class IslandMapManager:MonoBehaviour
             tmp.transform.localScale = Vector3.one;
             tmp.transform.localPosition = new Vector3(pos.x, pos.y, -1);
         }
+    }
+    
+    public void ReturnToIsland() {
+        Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
+        SaveToDate();
+        SceneManager.LoadScene("Scenes/SeaScene");
     }
 
     public void LoadByDate() {
@@ -120,6 +166,12 @@ public class IslandMapManager:MonoBehaviour
         //兴趣点不等于点击点 取消兴趣点
         if (intPos != interestPos) {
             interestPos = intPos;
+            if (pBuildingScript[intPos.x, intPos.y] != null) {
+                List<Vector2Int> t = new List<Vector2Int>();
+                t.Add(intPos);
+                SetEFInList(t);
+                return;
+            }
             List<Vector2Int> list;//特效点位
             BuildingType finallyBuilding;
             if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {
@@ -136,6 +188,12 @@ public class IslandMapManager:MonoBehaviour
         else {
             //如果是空地（为之后道具预留不是空地）
             if (pBuildingScript[intPos.x, intPos.y] == null) {
+                if (Saver.saveDate.gold < BUILDING_COST) {
+                    timer = 1;
+                    NoGoldLabel.SetActive(true);
+                    return;
+                }
+                Saver.saveDate.gold -= BUILDING_COST;
                 List<Vector2Int> list;
                 BuildingType finallyBuilding;
                 if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {

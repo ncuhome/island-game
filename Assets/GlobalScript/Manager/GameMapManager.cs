@@ -11,12 +11,13 @@ namespace Manager {
         public int mapWidth { get; private set; } = 3;
         public int mapHeight { get; private set; } = 3;
         const int MAX_MAP_LENGHT = 30;
+        public const int ISLAND_COST = 500;
         public Vector2Int interestEmpty=new Vector2Int(-1,-1);
         /// <summary>
         /// 最小岛屿合成数量
         /// </summary>
         //特效魔数
-        const int EF_NUM = 33123;
+        public const int EF_NUM = 33123;
         public const int MIN_MIXED_NUM = 3;
         IslandType[,] gameMap = new IslandType[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
         public IslandScript[,] pIslandScript = new IslandScript[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
@@ -87,7 +88,8 @@ namespace Manager {
                     ret.isInterestIsland = true;
                 }
             } else {
-                if (interestEmpty == pos) {
+                if (interestEmpty == pos && Saver.saveDate.power>ISLAND_COST) {
+                    Saver.saveDate.power -= ISLAND_COST;
                     PlaceIsland(IslandType.SMALL_ISLAND,pos,islandWaitPlace);
                     ret = pIslandScript[pos.x,pos.y];
                     interestEmpty.x = interestEmpty.y = -1;

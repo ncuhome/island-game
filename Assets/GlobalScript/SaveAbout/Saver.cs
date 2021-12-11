@@ -6,6 +6,7 @@ using UnityEngine;
 public static class Saver {
     static public SaveDate saveDate;
     static public IslandDate pNowIslandDate;
+    static public DateTime timeZero=new DateTime(2019,1,1,0,0,0);
     //Scene之间转换用的！！！！
     /// <summary>
     /// 加载Json存档

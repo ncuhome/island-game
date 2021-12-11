@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/IslandScene.unity
     guid: eb45e75350399414ab0dd978b49a5c1b
+  - enabled: 1
+    path: Assets/Scenes/StartScene.unity
+    guid: 4e65a7e14532c6541a9b23cdde4ffdfb
   m_configObjects: {}

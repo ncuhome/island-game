@@ -46,6 +46,7 @@ namespace Effect {
         public void DestroyHighLightByNum(int num) {
             if (!highLightMap.ContainsKey(num)) highLightMap.Add(num, new List<GameObject>());
             foreach(GameObject i in ((List<GameObject>)highLightMap[num])) {
+                if (i == null) continue;
                 i.SetActive(false);
                 highLightPool.Push(i);
             }
