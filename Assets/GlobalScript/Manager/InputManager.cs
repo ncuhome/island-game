@@ -24,12 +24,15 @@ namespace Manager {
 
         private void Awake() {
             InstanceManager.InputInstance = this;
-            singleTouch = new ScreenInputEvent(test);
+            if (InstanceManager.InputInstance != this) {
+                //单例失败
+                Destroy(gameObject);
+            }
             Input.multiTouchEnabled = false;
-            InstanceManager.InputInstance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
-        private void Update() {
+        private void LateUpdate() {
             if (Input.touchCount > 0) {
                 if (Input.touches[0].phase == TouchPhase.Began) {
                     if(singleTouch!=null)
@@ -37,7 +40,7 @@ namespace Manager {
                 }
             }
 
-            /* !!!WARNING!!! 以下是该死的测试代码，如果在发行中出现了该代码请清理生成与发布选项中的DEBUG宏定义 */
+            /* !!!WARNING!!! 以下是该死的测试代码 */
 #if UNITY_EDITOR
             if (Input.GetMouseButtonDown(0)) {
                 singleTouch(Input.mousePosition);

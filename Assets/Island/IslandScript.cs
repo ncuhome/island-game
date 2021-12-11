@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class IslandScript : MonoBehaviour
 {
-    //TODO 岛屿上建筑管理占位符
-    public IslandMapManager islandMapManager;
+    public IslandDate pIslandDate;
     public IslandType islandType=IslandType.SMALL_ISLAND;
     public Sprite[] islandSprite;
     public bool isInterestIsland = false;
@@ -18,9 +17,8 @@ public class IslandScript : MonoBehaviour
         if (spriteRenderer == null) {
             spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         }
-        transform.localScale =new Vector3(1,1,1);
+        transform.localScale =Vector3.one;
         transform.localPosition = new Vector3(x, y);
-        print((int)islandType - 1);
         if (islandType == IslandType.EMPTY) spriteRenderer.sprite = null;
         else spriteRenderer.sprite = islandSprite[(int)islandType - 1];
     }
@@ -29,9 +27,23 @@ public class IslandScript : MonoBehaviour
         return new Vector2Int((int)(transform.localPosition.x + 0.5f), (int)(transform.localPosition.y + 0.5f));
     }
 
-    //TODO 没写完！没写完！没写完！！！！
+    public int DestroyIslandGold() {
+        int sum = 0;
+        foreach (BuildingDate bd in pIslandDate.buildingDates) {
+            sum += BuildingScript.GetDestroyMoney(bd.buildingType);
+        }
+        return sum;
+    }
+
+    /// <summary>
+    /// 作为主岛进行合并
+    /// </summary>
+    /// <param name="islandA"></param>
+    /// <param name="islandB"></param>
     public void MixedAsMain(IslandScript islandA,IslandScript islandB) {
+        Saver.saveDate.gold += islandA.DestroyIslandGold() + islandB.DestroyIslandGold()+DestroyIslandGold();
         islandType = Manager.GameMapManager.getNextIslandType(islandType);
+        pIslandDate = new IslandDate(pIslandDate.pos, islandType);
         islandA.isInterestIsland = islandB.isInterestIsland = isInterestIsland = false;
     }
 }
