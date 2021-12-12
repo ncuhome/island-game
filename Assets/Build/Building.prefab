@@ -98,14 +98,14 @@ MonoBehaviour:
   buildingSprite:
   - {fileID: 21300000, guid: 2eb49990291fbf94d89f68e9a1c33eb9, type: 3}
   - {fileID: 21300000, guid: 31e291016a122a043acb1c4708f9afe1, type: 3}
-  - {fileID: 21300000, guid: 3830e561f0de6014693ef0e08be1fe3a, type: 3}
-  - {fileID: 21300000, guid: 0852d12b916299d44a685f71f6c7fda9, type: 3}
-  - {fileID: 21300000, guid: 32fe385b736e7d7448ea160c3af5f611, type: 3}
-  - {fileID: 21300000, guid: 12b1cf3263e5c004ca2d3e174de56e76, type: 3}
-  - {fileID: 21300000, guid: f84c769234ff388498899a47c94de214, type: 3}
-  - {fileID: 21300000, guid: 7c568873ff7f58e4d82ae7da54f62a06, type: 3}
-  - {fileID: 21300000, guid: 528d2cc10bc6f9b4b96594c669796110, type: 3}
-  - {fileID: 21300000, guid: 2f876299398ef804b8cee34decb3e669, type: 3}
+  - {fileID: 21300000, guid: 1bdc5c52462b0564fb1b01dc9e589e5f, type: 3}
+  - {fileID: 21300000, guid: 7f4d2ec2e84cc6b45a62877392a8bba9, type: 3}
+  - {fileID: 21300000, guid: 11ebeabd0b292fb48a5c00a305aea144, type: 3}
+  - {fileID: 21300000, guid: f427dcd88988aaf46b1d5e73972e69ad, type: 3}
+  - {fileID: 21300000, guid: 04b2d39d36f6a5b4f8335a86aac09734, type: 3}
+  - {fileID: 21300000, guid: 7f1cc8f76bc6d4e4ba8fbcc505f1b553, type: 3}
+  - {fileID: 21300000, guid: a55369535e360724aa94a29a45380031, type: 3}
+  - {fileID: 21300000, guid: 7c00345d49b365c4a884b6d0e2a3ac67, type: 3}
   - {fileID: 0}
   buildingType: 0
   isInterestBuilding: 0
