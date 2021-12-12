@@ -13,12 +13,12 @@ public static class Saver {
     /// </summary>
     /// <returns>是否成功加载</returns>
     static public bool LoadJsonSave() {
-        Debug.Log(Application.dataPath + "/save.json");
+        Debug.Log(Application.persistentDataPath + "/save.json");
         saveDate = new SaveDate();
-        if (!File.Exists(Application.dataPath + "/save.json")) {
+        if (!File.Exists(Application.persistentDataPath + "/save.json")) {
             return false;
         }
-        string json = File.ReadAllText(Application.dataPath + "/save.json");
+        string json = File.ReadAllText(Application.persistentDataPath + "/save.json");
         JsonUtility.FromJsonOverwrite(json, saveDate);
         return true;
     }
@@ -28,6 +28,6 @@ public static class Saver {
     static public void SaveJson() {
         if (saveDate == null) return;
         string json = JsonUtility.ToJson(saveDate);
-        File.WriteAllText(Application.dataPath + "/save.json", json);
+        File.WriteAllText(Application.persistentDataPath + "/save.json", json);
     }
 }
