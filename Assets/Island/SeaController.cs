@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SeaController : MonoBehaviour
 {
     public GameObject gameMap;
     public GameObject islandObj;
     public GameObject islandObjInHand;
+    public GameObject gotoIslandButton;
+    public GameObject NoPowerLabel;
+    public float timer;
     MapPosBasement mapPosBasement;
     Manager.GameMapManager gameMapManager;
     /// <summary>
@@ -31,35 +35,58 @@ public class SeaController : MonoBehaviour
         SaveDate sd = Saver.saveDate;
         gameMapManager = new Manager.GameMapManager(sd.seaWidth, sd.seaHeight);
         mapPosBasement = gameMap.GetComponent<MapPosBasement>();
-        mapPosBasement.mapHeight = sd.seaHeight;
         mapPosBasement.mapWidth = sd.seaWidth;
+        mapPosBasement.mapHeight = sd.seaHeight;
         mapPosBasement.ResetMapPos();
-
+        foreach(IslandDate id in sd.islandDates) {
+            GameObject tmp = Instantiate(islandObj);
+            tmp.transform.parent = mapPosBasement.transform;
+            IslandScript pTmp= tmp.GetComponent<IslandScript>();
+            pTmp.islandType = id.islandType;
+            gameMapManager.PlaceIsland(id.islandType, id.pos, tmp);
+            pTmp.pIslandDate = id;
+        }
     }
 
     private void Start() {
         Manager.InstanceManager.InputInstance.singleTouch += new Manager.ScreenInputEvent(SeaControlTouchEvent);
-        if (GameStateManager.instance.isLoadDate) {
-            InitBySave();
-        }
-        else {
-            InitByStart();
-        }
-        
+        InitBySave();
     }
 
     private void Update() {
         if (islandObjInHand == null) {
+            gameMapManager.SaveToDate();
             islandObjInHand = Instantiate(islandObj);
             islandObjInHand.transform.parent = mapPosBasement.transform;
             islandObjInHand.SetActive(false);
         }
+        if (Saver.saveDate.power < Manager.GameMapManager.ISLAND_COST && !NoPowerLabel.activeSelf) {
+            NoPowerLabel.SetActive(true);
+        }
+        else if (NoPowerLabel.activeSelf && Saver.saveDate.power >= Manager.GameMapManager.ISLAND_COST) {
+            NoPowerLabel.SetActive(false);
+        }
     }
 
+    public void gotoIslandScene() {
+        if (interestIslandList.Count == 1) {
+            gameMapManager.SaveToDate();
+            Saver.pNowIslandDate = interestIslandList[0].pIslandDate;
+            SceneManager.LoadScene("Scenes/IslandScene");
+        }
+    }
+
+    public void returnToMain() {
+        Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(Manager.GameMapManager.EF_NUM);
+        gameMapManager.SaveToDate();
+        SceneManager.LoadScene("Scenes/StartScene");
+    }
+    
     public void SeaControlTouchEvent(Vector2 pos) {
         //∑¿÷π÷√ø’
         if (islandObjInHand == null) return;
-        IslandScript tmp = gameMapManager.touchIsland(mapPosBasement.ScreenToMapPoint(pos),islandObjInHand);
+        bool isOutRange;
+        IslandScript tmp = gameMapManager.touchIsland(mapPosBasement.ScreenToMapPoint(pos),islandObjInHand,out isOutRange);
         if (tmp != null) {
             if(tmp.gameObject==islandObjInHand) {
                 islandObjInHand = null;
@@ -67,7 +94,7 @@ public class SeaController : MonoBehaviour
                 return;
             }
             interestIslandList.Add(tmp);
-        } else {
+        } else if(!isOutRange){
             foreach(IslandScript i in interestIslandList) {
                 i.isInterestIsland = false;
             }
@@ -87,6 +114,11 @@ public class SeaController : MonoBehaviour
                     return true;
                 }
             );
+        }
+        if (interestIslandList.Count == 1) {
+            gotoIslandButton.SetActive(true);
+        } else {
+            gotoIslandButton.SetActive(false);
         }
         gameMapManager.UpdateEffectByController(gameMap.transform);
     }

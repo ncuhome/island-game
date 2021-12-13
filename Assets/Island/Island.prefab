@@ -95,10 +95,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274f3b26cb645db4e9e96592e25abb82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  islandMapManager: {fileID: 0}
+  pIslandDate:
+    pos: {x: 0, y: 0}
+    islandType: 0
+    buildingDates: []
   islandType: 1
   islandSprite:
-  - {fileID: 21300000, guid: 4d474095ec5058a4091f7e2f71d2bc76, type: 3}
-  - {fileID: 21300000, guid: ff6194bd37465124dbb1d6add33c5dc0, type: 3}
-  - {fileID: 21300000, guid: 79efb23edcf91ee429e29778b4887bdb, type: 3}
+  - {fileID: 21300000, guid: 8b7e219443764174a9c7f411cffc082c, type: 3}
+  - {fileID: 21300000, guid: 7ec61b4d2e7c5a34895850cf28e2fb3a, type: 3}
+  - {fileID: 21300000, guid: 40d8d57653fe7994db29f9855bd2852f, type: 3}
   isInterestIsland: 0

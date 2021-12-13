@@ -11,12 +11,13 @@ namespace Manager {
         public int mapWidth { get; private set; } = 3;
         public int mapHeight { get; private set; } = 3;
         const int MAX_MAP_LENGHT = 30;
-        public Vector2Int interestEmpty;
+        public const int ISLAND_COST = 500;
+        public Vector2Int interestEmpty=new Vector2Int(-1,-1);
         /// <summary>
         /// 最小岛屿合成数量
         /// </summary>
         //特效魔数
-        const int EF_NUM = 33123;
+        public const int EF_NUM = 33123;
         public const int MIN_MIXED_NUM = 3;
         IslandType[,] gameMap = new IslandType[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
         public IslandScript[,] pIslandScript = new IslandScript[MAX_MAP_LENGHT,MAX_MAP_LENGHT];
@@ -57,7 +58,7 @@ namespace Manager {
                 GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
                 tmp.transform.parent = par;
                 tmp.transform.localScale = Vector3.one;
-                tmp.transform.localPosition = new Vector3(interestEmpty.x,interestEmpty.y);
+                tmp.transform.localPosition = new Vector3(interestEmpty.x,interestEmpty.y,-1);
             } else {
                 for (int i = 0; i < mapWidth; i++) {
                     for (int r = 0; r < mapHeight; r++) {
@@ -65,7 +66,7 @@ namespace Manager {
                             GameObject tmp = InstanceManager.EffectInstance.GetHighLightByNum(EF_NUM);
                             tmp.transform.parent = par;
                             tmp.transform.localScale = Vector3.one;
-                            tmp.transform.localPosition = new Vector3(i, r);
+                            tmp.transform.localPosition = new Vector3(i, r,-1);
                         }
                     }
                 }
@@ -77,8 +78,13 @@ namespace Manager {
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace) {
+        public IslandScript touchIsland(Vector2Int pos,GameObject islandWaitPlace,out bool isOutRange) {
             IslandScript ret = null;
+            isOutRange = false;
+            if (pos.x >= mapWidth || pos.x < 0 || pos.y >= mapHeight || pos.y < 0) {
+                isOutRange = true;
+                return null;
+            }
             if (pIslandScript[pos.x, pos.y] != null) {
                 ret = pIslandScript[pos.x, pos.y];
                 interestEmpty.x = -1;
@@ -91,7 +97,8 @@ namespace Manager {
                     ret.isInterestIsland = true;
                 }
             } else {
-                if (interestEmpty == pos) {
+                if (interestEmpty == pos && Saver.saveDate.power>ISLAND_COST) {
+                    Saver.saveDate.power -= ISLAND_COST;
                     PlaceIsland(IslandType.SMALL_ISLAND,pos,islandWaitPlace);
                     ret = pIslandScript[pos.x,pos.y];
                     interestEmpty.x = interestEmpty.y = -1;
@@ -117,15 +124,15 @@ namespace Manager {
         }
 
         /// <summary>
-        /// 使用保存的地图更新IslandScript
+        /// 更新date
         /// </summary>
-        public void UpdateIslandByMap(GameObject islandObj,Transform mapPosBasementTransform) {
+        public void SaveToDate() {
+            SaveDate sd = Saver.saveDate;
+            sd.islandDates.Clear();
             for(int i = 0; i < mapWidth; ++i) {
-                for(int r = 0; r < mapHeight; ++i) {
-                    if (pIslandScript[i, r] == null && gameMap[i, r] != IslandType.EMPTY) {
-                        GameObject tmp = GameObject.Instantiate(islandObj);
-                        tmp.transform.parent = mapPosBasementTransform;
-                        //TODO 上次写到这里 2021年12月8日22:50:43
+                for(int r = 0; r < mapHeight; ++r) {
+                    if (pIslandScript[i, r] != null) {
+                        sd.islandDates.Add(pIslandScript[i, r].pIslandDate);
                     }
                 }
             }
@@ -144,6 +151,7 @@ namespace Manager {
             gameMap[pos.x, pos.y] = island;
             islandWaitPlace.SetActive(true);
             pIslandScript[pos.x,pos.y] = islandWaitPlace.GetComponent<IslandScript>();
+            pIslandScript[pos.x, pos.y].pIslandDate = new IslandDate(pos, island);
             UpdateIslandGameObject();
             return true;
         }
@@ -253,11 +261,7 @@ namespace Manager {
         /// <param name="b">第二个岛屿</param>
         /// <returns>是否可以合成</returns>
         public static bool canMixed(IslandType a,IslandType b) {
-            if(a>b) {
-                IslandType tmp = b;
-                b = a;
-                a = tmp;
-            }
+            if (a == IslandType.EMPTY || a == IslandType.LARGE_ISLAND || b == IslandType.EMPTY || b == IslandType.LARGE_ISLAND) return false;
             return a == b;
         }
 

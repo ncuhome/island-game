@@ -21,13 +21,20 @@ namespace Effect {
         public Hashtable highLightMap=new Hashtable(); 
         public void Awake() {
             Manager.InstanceManager.EffectInstance = this;
+            if (Manager.InstanceManager.EffectInstance != this) {
+                Destroy(gameObject);
+                return;
+            }
+            DontDestroyOnLoad(gameObject);
         }
         
         public GameObject GetHighLightByNum(int num) {
             if (!highLightMap.ContainsKey(num)) highLightMap.Add(num, new List<GameObject>());
-            GameObject tmp;
-            if (highLightPool.Count > 0) {
+            GameObject tmp=null;
+            while(highLightPool.Count > 0 && !(tmp == null)) {
                 tmp = highLightPool.Pop();
+            }
+            if (!(tmp==null)) {
                 tmp.SetActive(true);
             } else {
                 tmp = Instantiate(highLight);
@@ -39,6 +46,7 @@ namespace Effect {
         public void DestroyHighLightByNum(int num) {
             if (!highLightMap.ContainsKey(num)) highLightMap.Add(num, new List<GameObject>());
             foreach(GameObject i in ((List<GameObject>)highLightMap[num])) {
+                if (i == null) continue;
                 i.SetActive(false);
                 highLightPool.Push(i);
             }
