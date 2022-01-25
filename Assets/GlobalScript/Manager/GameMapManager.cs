@@ -88,8 +88,8 @@ namespace Manager {
                     ret.isInterestIsland = true;
                 }
             } else {
-                if (interestEmpty == pos && Saver.saveDate.power>ISLAND_COST) {
-                    Saver.saveDate.power -= ISLAND_COST;
+                if (interestEmpty == pos && Saver.saveData.power>ISLAND_COST) {
+                    Saver.saveData.power -= ISLAND_COST;
                     PlaceIsland(IslandType.SMALL_ISLAND,pos,islandWaitPlace);
                     ret = pIslandScript[pos.x,pos.y];
                     interestEmpty.x = interestEmpty.y = -1;
@@ -117,13 +117,13 @@ namespace Manager {
         /// <summary>
         /// ¸üÐÂdate
         /// </summary>
-        public void SaveToDate() {
-            SaveDate sd = Saver.saveDate;
-            sd.islandDates.Clear();
+        public void SaveToData() {
+            SaveData sd = Saver.saveData;
+            sd.islandDatas.Clear();
             for(int i = 0; i < mapWidth; ++i) {
                 for(int r = 0; r < mapHeight; ++r) {
                     if (pIslandScript[i, r] != null) {
-                        sd.islandDates.Add(pIslandScript[i, r].pIslandDate);
+                        sd.islandDatas.Add(pIslandScript[i, r].pIslandData);
                     }
                 }
             }
@@ -142,7 +142,7 @@ namespace Manager {
             gameMap[pos.x, pos.y] = island;
             islandWaitPlace.SetActive(true);
             pIslandScript[pos.x,pos.y] = islandWaitPlace.GetComponent<IslandScript>();
-            pIslandScript[pos.x, pos.y].pIslandDate = new IslandDate(pos, island);
+            pIslandScript[pos.x, pos.y].pIslandData = new IslandData(pos, island);
             UpdateIslandGameObject();
             return true;
         }

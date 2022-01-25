@@ -32,19 +32,19 @@ public class SeaController : MonoBehaviour
     }
 
     void InitBySave() {
-        SaveDate sd = Saver.saveDate;
+        SaveData sd = Saver.saveData;
         gameMapManager = new Manager.GameMapManager(sd.seaWidth, sd.seaHeight);
         mapPosBasement = gameMap.GetComponent<MapPosBasement>();
         mapPosBasement.mapWidth = sd.seaWidth;
         mapPosBasement.mapHeight = sd.seaHeight;
         mapPosBasement.ResetMapPos();
-        foreach(IslandDate id in sd.islandDates) {
+        foreach(IslandData id in sd.islandDatas) {
             GameObject tmp = Instantiate(islandObj);
             tmp.transform.parent = mapPosBasement.transform;
             IslandScript pTmp= tmp.GetComponent<IslandScript>();
             pTmp.islandType = id.islandType;
             gameMapManager.PlaceIsland(id.islandType, id.pos, tmp);
-            pTmp.pIslandDate = id;
+            pTmp.pIslandData = id;
         }
     }
 
@@ -55,30 +55,30 @@ public class SeaController : MonoBehaviour
 
     private void Update() {
         if (islandObjInHand == null) {
-            gameMapManager.SaveToDate();
+            gameMapManager.SaveToData();
             islandObjInHand = Instantiate(islandObj);
             islandObjInHand.transform.parent = mapPosBasement.transform;
             islandObjInHand.SetActive(false);
         }
-        if (Saver.saveDate.power < Manager.GameMapManager.ISLAND_COST && !NoPowerLabel.activeSelf) {
+        if (Saver.saveData.power < Manager.GameMapManager.ISLAND_COST && !NoPowerLabel.activeSelf) {
             NoPowerLabel.SetActive(true);
         }
-        else if (NoPowerLabel.activeSelf && Saver.saveDate.power >= Manager.GameMapManager.ISLAND_COST) {
+        else if (NoPowerLabel.activeSelf && Saver.saveData.power >= Manager.GameMapManager.ISLAND_COST) {
             NoPowerLabel.SetActive(false);
         }
     }
 
     public void gotoIslandScene() {
         if (interestIslandList.Count == 1) {
-            gameMapManager.SaveToDate();
-            Saver.pNowIslandDate = interestIslandList[0].pIslandDate;
+            gameMapManager.SaveToData();
+            Saver.pNowIslandData = interestIslandList[0].pIslandData;
             SceneManager.LoadScene("Scenes/IslandScene");
         }
     }
 
     public void returnToMain() {
         Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(Manager.GameMapManager.EF_NUM);
-        gameMapManager.SaveToDate();
+        gameMapManager.SaveToData();
         SceneManager.LoadScene("Scenes/StartScene");
     }
     

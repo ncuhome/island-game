@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class IslandScript : MonoBehaviour
 {
-    public IslandDate pIslandDate;
+    public IslandData pIslandData;
     public IslandType islandType=IslandType.SMALL_ISLAND;
     public Sprite[] islandSprite;
     public bool isInterestIsland = false;
@@ -29,7 +29,7 @@ public class IslandScript : MonoBehaviour
 
     public int DestroyIslandGold() {
         int sum = 0;
-        foreach (BuildingDate bd in pIslandDate.buildingDates) {
+        foreach (BuildingData bd in pIslandData.buildingDatas) {
             sum += BuildingScript.GetDestroyMoney(bd.buildingType);
         }
         return sum;
@@ -41,9 +41,9 @@ public class IslandScript : MonoBehaviour
     /// <param name="islandA"></param>
     /// <param name="islandB"></param>
     public void MixedAsMain(IslandScript islandA,IslandScript islandB) {
-        Saver.saveDate.gold += islandA.DestroyIslandGold() + islandB.DestroyIslandGold()+DestroyIslandGold();
+        Saver.saveData.gold += islandA.DestroyIslandGold() + islandB.DestroyIslandGold()+DestroyIslandGold();
         islandType = Manager.GameMapManager.getNextIslandType(islandType);
-        pIslandDate = new IslandDate(pIslandDate.pos, islandType);
+        pIslandData = new IslandData(pIslandData.pos, islandType);
         islandA.isInterestIsland = islandB.isInterestIsland = isInterestIsland = false;
     }
 }

@@ -15,6 +15,6 @@ public class Line : MonoBehaviour
     {
         
         int width;
-        width = Saver.saveDate.seaWidth    ;
+        width = Saver.saveData.seaWidth    ;
     }
 }

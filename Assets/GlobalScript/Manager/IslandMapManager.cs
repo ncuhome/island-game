@@ -12,7 +12,7 @@ public class IslandMapManager:MonoBehaviour
     public Image nextImage;
     public Sprite[] sprites = new Sprite[4];
     public MapPosBasement mapPosBasement;
-    public IslandDate islandDate;
+    public IslandData islandData;
     public int islandWidth;
     public int islandHeight;
     const int MAX_ISLAND_LENGHT=30;
@@ -39,7 +39,7 @@ public class IslandMapManager:MonoBehaviour
 
     public void ShowNextBuilding() {
         int tmp;
-        switch (Saver.saveDate.nextBuildingType) {
+        switch (Saver.saveData.nextBuildingType) {
             case BuildingType.BASIC_BUILDING:
                 tmp = 0;
                 break;
@@ -57,7 +57,7 @@ public class IslandMapManager:MonoBehaviour
     }
 
     private void Start() {
-        LoadByDate();
+        LoadByData();
         Manager.InstanceManager.InputInstance.singleTouch += this.BuildingTouchEvent;
         ShowNextBuilding();
     }
@@ -68,14 +68,14 @@ public class IslandMapManager:MonoBehaviour
     /// <summary>
     /// 保存数据
     /// </summary>
-    public void SaveToDate() {
-        Saver.saveDate.nextBuildingType = nextBuilding;
-        islandDate.buildingDates.Clear();
+    public void SaveToData() {
+        Saver.saveData.nextBuildingType = nextBuilding;
+        islandData.buildingDatas.Clear();
         for(int i=0;i<islandWidth;++i)
             for(int r = 0; r < islandHeight; ++r) {
                 if (pBuildingScript[i, r] != null) {
-                    islandDate.buildingDates.Add(
-                        new BuildingDate(
+                    islandData.buildingDatas.Add(
+                        new BuildingData(
                             pBuildingScript[i, r].transform.localPosition,
                             pBuildingScript[i, r].buildingType
                             )
@@ -103,7 +103,7 @@ public class IslandMapManager:MonoBehaviour
         } else {
             nextBuilding = BuildingType.LEVEL1_WORKSHOP;
         }
-        Saver.saveDate.nextBuildingType = nextBuilding;
+        Saver.saveData.nextBuildingType = nextBuilding;
         ShowNextBuilding();
     }
     /// <summary>
@@ -122,15 +122,15 @@ public class IslandMapManager:MonoBehaviour
     
     public void ReturnToIsland() {
         Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
-        SaveToDate();
+        SaveToData();
         SceneManager.LoadScene("Scenes/SeaScene");
     }
 
-    public void LoadByDate() {
-        islandDate = Saver.pNowIslandDate;
-        nextBuilding = Saver.saveDate.nextBuildingType;
+    public void LoadByData() {
+        islandData = Saver.pNowIslandData;
+        nextBuilding = Saver.saveData.nextBuildingType;
         int len=1;
-        switch (islandDate.islandType) {
+        switch (islandData.islandType) {
             case IslandType.SMALL_ISLAND:
                 len = 4;
                 break;
@@ -147,17 +147,17 @@ public class IslandMapManager:MonoBehaviour
         mapPosBasement.mapHeight = islandHeight;
         mapPosBasement.ResetMapPos();
         mapPosBasement.SpawnSquare();
-        foreach (BuildingDate bd in islandDate.buildingDates) {
+        foreach (BuildingData bd in islandData.buildingDatas) {
             setBuilding(bd.pos, bd.buildingType);
         }
     }
     /// <summary>
-    /// 使用IslandDate加载数据
+    /// 使用IslandData加载数据
     /// </summary>
-    /// <param name="islandDate"></param>
-    public void LoadByDate(IslandDate islandDate) {
-        this.islandDate = islandDate;
-        LoadByDate();
+    /// <param name="islandData"></param>
+    public void LoadByData(IslandData islandData) {
+        this.islandData = islandData;
+        LoadByData();
     }
 
     public void BuildingTouchEvent(Vector2 pos) {
@@ -188,12 +188,12 @@ public class IslandMapManager:MonoBehaviour
         else {
             //如果是空地（为之后道具预留不是空地）
             if (pBuildingScript[intPos.x, intPos.y] == null) {
-                if (Saver.saveDate.gold < BUILDING_COST) {
+                if (Saver.saveData.gold < BUILDING_COST) {
                     timer = 1;
                     NoGoldLabel.SetActive(true);
                     return;
                 }
-                Saver.saveDate.gold -= BUILDING_COST;
+                Saver.saveData.gold -= BUILDING_COST;
                 List<Vector2Int> list;
                 BuildingType finallyBuilding;
                 if (MixedIsAllow(nextBuilding, intPos, out list, out finallyBuilding)) {
@@ -207,7 +207,7 @@ public class IslandMapManager:MonoBehaviour
                 }
                 Manager.InstanceManager.EffectInstance.DestroyHighLightByNum(EF_NUM);
                 GetNextSetBuilding();
-                SaveToDate();
+                SaveToData();
             }
         }
     }

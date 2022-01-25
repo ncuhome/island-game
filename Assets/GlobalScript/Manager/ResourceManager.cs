@@ -20,9 +20,9 @@ public class ResourceManager : MonoBehaviour
     int timer = 60;
     void IDONTKNOWWHATTHISFUNSNAME() {
         int powerCount = 0, goldCount = 0 ;
-        SaveDate sd = Saver.saveDate;
-        foreach(IslandDate id in sd.islandDates) {
-            foreach(BuildingDate bd in id.buildingDates) {
+        SaveData sd = Saver.saveData;
+        foreach(IslandData id in sd.islandDatas) {
+            foreach(BuildingData bd in id.buildingDatas) {
                 powerCount += BuildingScript.BuildingPowerOutput(bd.buildingType);
                 goldCount += BuildingScript.BuildingGoldOutput(bd.buildingType);
             }

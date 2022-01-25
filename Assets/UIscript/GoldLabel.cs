@@ -8,6 +8,6 @@ public class GoldLabel : MonoBehaviour
     Text text;
     private void FixedUpdate() {
         if (text == null) text = gameObject.GetComponent<Text>();
-        text.text = ((long)Saver.saveDate.gold).ToString();
+        text.text = ((long)Saver.saveData.gold).ToString();
     }
 }

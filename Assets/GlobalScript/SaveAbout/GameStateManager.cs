@@ -9,7 +9,7 @@ using UnityEngine;
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager instance = null;
-    public bool isLoadDate { get; private set; } = false;
+    public bool isLoadData { get; private set; } = false;
     private void Awake() {
         if (instance == null) {
             instance = this;
@@ -17,7 +17,7 @@ public class GameStateManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        isLoadDate = Saver.LoadJsonSave();
+        isLoadData = Saver.LoadJsonSave();
         DontDestroyOnLoad(gameObject);
     }
     private void OnApplicationPause(bool pause) {

@@ -5,16 +5,16 @@ using UnityEngine;
 
 
 [Serializable]
-public class SaveDate
+public class SaveData
 {
     public int seaWidth;
     public int seaHeight;
     public System.Int64 lastTickTime;
     public double power;
     public double gold;
-    public List<IslandDate> islandDates=new List<IslandDate>();
+    public List<IslandData> islandDatas=new List<IslandData>();
     public BuildingType nextBuildingType;
-    public SaveDate() {
+    public SaveData() {
         seaHeight = seaWidth = 3;
         lastTickTime = (long)(DateTime.Now - Saver.timeZero).TotalSeconds;
         power = 2000;
@@ -24,23 +24,23 @@ public class SaveDate
 }
 
 [Serializable]
-public class IslandDate {
-    public IslandDate(Vector2Int pos,IslandType islandType) {
+public class IslandData {
+    public IslandData(Vector2Int pos,IslandType islandType) {
         this.pos = pos;
         this.islandType = islandType;
     }
     public Vector2Int pos;
     public IslandType islandType;
-    public List<BuildingDate> buildingDates=new List<BuildingDate>();
+    public List<BuildingData> buildingDatas=new List<BuildingData>();
 }
 
 [Serializable]
-public class BuildingDate {
-    public BuildingDate(Vector2Int pos,BuildingType buildingType) {
+public class BuildingData {
+    public BuildingData(Vector2Int pos,BuildingType buildingType) {
         this.pos = pos;
         this.buildingType = buildingType;
     }
-    public BuildingDate(Vector3 pos,BuildingType buildingType) {
+    public BuildingData(Vector3 pos,BuildingType buildingType) {
         this.pos = new Vector2Int((int)pos.x, (int)pos.y);
         this.buildingType = buildingType;
     }

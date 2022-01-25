@@ -8,6 +8,6 @@ public class PowerLabel : MonoBehaviour
     Text text;
     private void FixedUpdate() {
         if (text == null) text = gameObject.GetComponent<Text>();
-        text.text =((int)Saver.saveDate.power).ToString();
+        text.text =((int)Saver.saveData.power).ToString();
     }
 }
